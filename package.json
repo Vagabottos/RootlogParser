@@ -1,0 +1,39 @@
+{
+  "name": "@seiyria/rootlog-parser",
+  "version": "1.0.0",
+  "description": "A parser to parse Rootlog games.",
+  "main": "./dist/index.js",
+  "typings": "./dist/src/index.d.ts",
+  "registry": "npm",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "webpack --config webpack.config.js",
+    "test": "ava-ts src/**/*.spec.ts",
+    "test:rootlog": "ts-node test/rootlog.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vagabotto/RootlogParser.git"
+  },
+  "keywords": [
+    "root",
+    "boardgame",
+    "rootlog",
+    "tts",
+    "parser"
+  ],
+  "author": "Kyle Kemp <kyle@seiyria.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Vagabotto/RootlogParser/issues"
+  },
+  "homepage": "https://github.com/Vagabotto/RootlogParser#readme",
+  "devDependencies": {
+    "@types/node": "^9.4.6",
+    "ava-ts": "^0.24.2",
+    "awesome-typescript-loader": "^3.4.1",
+    "ts-node": "^4.1.0",
+    "typescript": "^4.1.2",
+    "webpack": "^3.11.0"
+  }
+}
