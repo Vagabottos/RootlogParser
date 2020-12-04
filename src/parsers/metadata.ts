@@ -2,7 +2,7 @@ import { parseAction } from '../action-parser';
 import { Deck, Faction, Map, Suit, Turn } from '../interfaces';
 
 
-function cleanText(str: string): string {
+function cleanText(str: string = ''): string {
   return str.trim();
 }
 
