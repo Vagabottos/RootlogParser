@@ -7,7 +7,7 @@ const ALL_ITEMS = Object.values(Item).join('');
 const ALL_PIECES = Object.values(Piece).join('');
 const ALL_ITEM_STATE = Object.values(ItemState).join('');
 
-const GROUPING_REGEX = new RegExp(`\((.+)\)(.+)`);
+const GROUPING_REGEX = new RegExp(`\\((.+)\\)(.+)`);
 const COMBAT_REGEX = new RegExp(`^([${ALL_FACTIONS}])?X([${ALL_FACTIONS}])([0-9]{1,2})`);
 
 const MOVE_ITEM_REGEX = new RegExp(`^%([${ALL_ITEMS}]{1,2})?([${ALL_FACTIONS}])?\\$?([${ALL_ITEM_STATE}])?->([${ALL_ITEM_STATE}])?([${ALL_FACTIONS}])?\\$?`);
@@ -82,18 +82,18 @@ function parseCard(card: string): Card {
 }
 
 // parse a reveal action
-function parseReveal(action: string, takingFaction: Faction): ActionReveal {
+export function parseReveal(action: string, takingFaction: Faction): ActionReveal {
   
   const [leftSide, rightSide] = action.split('^', 2);
 
   const targets = rightSide.includes('+')
-    ? rightSide.split('+')
-    : [rightSide];
+    ? rightSide.split('+').map(s => s || null)
+    : [rightSide || null];
 
   function parseLeftSideOfReveal(leftSide: string): any {
-    const twoDigitNumberRegex = /^([0-9]{1-2}).*/;
+    const twoDigitNumberRegex = /^([0-9]{1,2}).*/;
     const number = twoDigitNumberRegex.test(leftSide)
-      ? leftSide.match(twoDigitNumberRegex)
+      ? leftSide.match(twoDigitNumberRegex)[1]
       : null;
     
     const revealer = ALL_FACTIONS.split('').some(faction => leftSide.endsWith(faction))
@@ -114,11 +114,8 @@ function parseReveal(action: string, takingFaction: Faction): ActionReveal {
 
   const subjects = (function () {
     if (GROUPING_REGEX.test(leftSide)) {
-      const [grouped, outerTerm] = leftSide.match(GROUPING_REGEX);
-      const applied = outerTerm.includes('#')
-        ? '#'
-        : '';
-      return grouped.split('+').map(g => parseLeftSideOfReveal(g + applied));
+      const [_, grouped, outerTerm] = leftSide.match(GROUPING_REGEX);
+      return grouped.split('+').map(g => parseLeftSideOfReveal(g + outerTerm));
     } else if (leftSide.includes('+')) {
       return leftSide.split('+').map(g => parseLeftSideOfReveal(g));
     } else {
