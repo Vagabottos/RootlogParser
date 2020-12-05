@@ -114,10 +114,10 @@ export enum CorvidSpecial {
   ExtortionPlot = 't_e'
 }
 
-export enum Card {
+export enum CardName {
 
   // all decks
-  Ambush = 'amb',
+  Ambush = '@',
   Dominance = 'dom',
 
   // base deck
@@ -127,9 +127,9 @@ export enum Card {
   CommandWarren = 'command',
   Cob = 'cob',
   Codebreakers = 'codeb',
-  FoxFavor = 'favorf',
-  MouseFavor = 'favorm',
-  RabbitFavor = 'favorr',
+  FoxFavor = 'ffavor',
+  MouseFavor = 'mfavor',
+  RabbitFavor = 'rfavor',
   Royal = 'royal',
   Sappers = 'sap',
   Scout = 'scout',
@@ -167,6 +167,11 @@ export enum QuestCard {
   Guard = 'guard',
   Logs = 'logs',
   Shed = 'shed'
+}
+
+export interface Card {
+    suit?: Suit,
+    cardName?: string
 }
 
 export interface Turn {
