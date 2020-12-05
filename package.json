@@ -8,7 +8,7 @@
   "scripts": {
     "prepare": "npm run build",
     "build": "webpack --config webpack.config.js",
-    "test": "ava-ts src/**/*.spec.ts",
+    "test": "ava-ts test/**/*.spec.ts",
     "test:rootlog": "ts-node test/rootlog.ts"
   },
   "repository": {
