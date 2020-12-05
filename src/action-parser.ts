@@ -24,15 +24,14 @@ export function parseVP(action: string, takingFaction: Faction): ActionGainVP {
 
 // parse a dominance/coalition action
 // TODO: parse target
-function parseDominance(action: string, takingFaction: Faction): ActionDominance {
+function parseDominance(action: string): ActionDominance {
   return {
-    faction: takingFaction,
     target: Faction.Marquise
   };
 }
 
 // parse a craft card or item
-function parseCraft(action: string): ActionCraft {
+export function parseCraft(action: string): ActionCraft {
   const craft = action.split('Z')[1];
 
   // craft an item
@@ -41,7 +40,7 @@ function parseCraft(action: string): ActionCraft {
   }
 
   // craft a card
-  return { craftCard: craft[0] as Card };
+  return { craftCard: craft as CardName };
 }
 
 // parse a combat action

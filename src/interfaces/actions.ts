@@ -1,4 +1,4 @@
-import { Card, Faction, Item, Piece, Suit } from './rootgame';
+import { Card, CardName, Faction, Item, Piece, Suit } from './rootgame';
 
 export type Action = ActionGainVP | ActionCraft | ActionMove | ActionDominance | ActionCombat | ActionReveal;
 
@@ -9,7 +9,7 @@ export interface ActionGainVP {
 
 export interface ActionCraft {
   craftItem?: Item;
-  craftCard?: Card;
+  craftCard?: CardName;
 }
 
 export interface ActionCombat {
@@ -27,7 +27,6 @@ export interface ActionMove {
 }
 
 export interface ActionDominance {
-  faction: Faction;
   target: Faction;
 }
 
