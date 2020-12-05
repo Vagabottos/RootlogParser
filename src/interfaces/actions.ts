@@ -3,6 +3,7 @@ import { Card, Faction, Item, Piece, Suit } from './rootgame';
 export type Action = ActionGainVP | ActionCraft | ActionMove | ActionDominance | ActionCombat | ActionReveal;
 
 export interface ActionGainVP {
+  faction: Faction;
   vp: number;
 }
 
@@ -26,6 +27,7 @@ export interface ActionMove {
 }
 
 export interface ActionDominance {
+  faction: Faction;
   target: Faction;
 }
 

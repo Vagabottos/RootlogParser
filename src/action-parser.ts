@@ -13,16 +13,22 @@ const COMBAT_REGEX = new RegExp(`^([${ALL_FACTIONS}])?X([${ALL_FACTIONS}])([0-9]
 const MOVE_ITEM_REGEX = new RegExp(`^%([${ALL_ITEMS}]{1,2})?([${ALL_FACTIONS}])?\\$?([${ALL_ITEM_STATE}])?->([${ALL_ITEM_STATE}])?([${ALL_FACTIONS}])?\\$?`);
 
 // parse a VP action, defaults to +1
-// TODO: include faction
-function parseVP(action: string): ActionGainVP {
-  const count = action.split('++')[1] || '1';
-  return { vp: +count };
+export function parseVP(action: string, takingFaction: Faction): ActionGainVP {
+  const vpActionPieces = action.split('++');
+  const count = vpActionPieces[1] || '1';
+  return {
+    vp: +count,
+    faction: (vpActionPieces[0] || takingFaction) as Faction
+  };
 }
 
-// parse a dominance action
-// TODO: parse dom
-function parseDominance(action: string): ActionDominance {
-  return { target: Faction.Marquise };
+// parse a dominance/coalition action
+// TODO: parse target
+function parseDominance(action: string, takingFaction: Faction): ActionDominance {
+  return {
+    faction: takingFaction,
+    target: Faction.Marquise
+  };
 }
 
 // parse a craft card or item
@@ -90,29 +96,29 @@ export function parseReveal(action: string, takingFaction: Faction): ActionRevea
     ? rightSide.split('+').map(s => s || null)
     : [rightSide || null];
 
-  function parseLeftSideOfReveal(leftSide: string): any {
-    const twoDigitNumberRegex = /^([0-9]{1,2}).*/;
-    const number = twoDigitNumberRegex.test(leftSide)
-      ? leftSide.match(twoDigitNumberRegex)[1]
-      : null;
-    
-    const revealer = ALL_FACTIONS.split('').some(faction => leftSide.endsWith(faction))
-      ? leftSide[leftSide.length - 1] as Faction
-      : null;
-
-    const card = leftSide.substring(
-      number ? number.toString().length : 0,
-      leftSide.length - (revealer ? revealer.length : 0)
-    );
-
-    return {
-      number: card ? (+number || 1) : null,
-      card: card ? parseCard(card) : null,
-      revealer: revealer || takingFaction
-    };
-  }
-
   const subjects = (function () {
+    function parseLeftSideOfReveal(leftSide: string): any {
+      const twoDigitNumberRegex = /^([0-9]{1,2}).*/;
+      const number = twoDigitNumberRegex.test(leftSide)
+        ? leftSide.match(twoDigitNumberRegex)[1]
+        : null;
+      
+      const revealer = ALL_FACTIONS.split('').some(faction => leftSide.endsWith(faction))
+        ? leftSide[leftSide.length - 1] as Faction
+        : null;
+  
+      const card = leftSide.substring(
+        number ? number.toString().length : 0,
+        leftSide.length - (revealer ? revealer.length : 0)
+      );
+  
+      return {
+        number: card ? (+number || 1) : null,
+        card: card ? parseCard(card) : null,
+        revealer: revealer || takingFaction
+      };
+    }
+
     if (GROUPING_REGEX.test(leftSide)) {
       const [_, grouped, outerTerm] = leftSide.match(GROUPING_REGEX);
       return grouped.split('+').map(g => parseLeftSideOfReveal(g + outerTerm));
@@ -133,7 +139,7 @@ export function parseReveal(action: string, takingFaction: Faction): ActionRevea
 export function parseAction(action: string, faction: Faction): Action {
 
   if(action.includes('++') && !action.includes('->')) {
-    return parseVP(action);
+    return parseVP(action, faction);
   }
 
   if(action.includes('++') && action.includes('->')) {
@@ -152,8 +158,12 @@ export function parseAction(action: string, faction: Faction): Action {
     return parseCombat(action, faction);
   }
 
-  if(action.includes('^') && !Object.values(CorvidSpecial).some(corvidPlot => action.endsWith(corvidPlot))) {
-    return parseReveal(action, faction);
+  if(action.includes('^')) {
+    if (!Object.values(CorvidSpecial).some(corvidPlot => action.endsWith(corvidPlot))) {
+      return parseReveal(action, faction);
+    } else {
+      // TODO: Parse Corvid reveal plot
+    }
   }
 
   if(MOVE_ITEM_REGEX.test(action)) {
