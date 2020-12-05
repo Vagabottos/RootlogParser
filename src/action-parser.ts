@@ -88,6 +88,17 @@ function parseCard(card: string): Card {
     };
 }
 
+function parseCombineAndGroup(side: string): string[] {
+  if (GROUPING_REGEX.test(side)) {
+    const [_, grouped, outerTerm] = side.match(GROUPING_REGEX);
+    return grouped.split('+').map(g => g + outerTerm);
+  } else if (side.includes('+')) {
+    return side.split('+');
+  } else {
+    return [side];
+  }
+}
+
 // parse a reveal action
 export function parseReveal(action: string, takingFaction: Faction): ActionReveal {
   
@@ -97,8 +108,8 @@ export function parseReveal(action: string, takingFaction: Faction): ActionRevea
     ? rightSide.split('+').map(s => s || null)
     : [rightSide || null];
 
-  const subjects = (function () {
-    function parseLeftSideOfReveal(leftSide: string): any {
+  const subjects = parseCombineAndGroup(leftSide)
+    .map(function (leftSide: string): any {
       const twoDigitNumberRegex = /^([0-9]{1,2}).*/;
       const number = twoDigitNumberRegex.test(leftSide)
         ? leftSide.match(twoDigitNumberRegex)[1]
@@ -118,17 +129,7 @@ export function parseReveal(action: string, takingFaction: Faction): ActionRevea
         card: card ? parseCard(card) : null,
         revealer: revealer || takingFaction
       };
-    }
-
-    if (GROUPING_REGEX.test(leftSide)) {
-      const [_, grouped, outerTerm] = leftSide.match(GROUPING_REGEX);
-      return grouped.split('+').map(g => parseLeftSideOfReveal(g + outerTerm));
-    } else if (leftSide.includes('+')) {
-      return leftSide.split('+').map(g => parseLeftSideOfReveal(g));
-    } else {
-      return [parseLeftSideOfReveal(leftSide)];
-    }
-  }());
+    });
 
   return {
     subjects: subjects as SubjectReveal[],
