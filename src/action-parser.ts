@@ -10,8 +10,6 @@ const ALL_ITEM_STATE = Object.values(ItemState).join('');
 const GROUPING_REGEX = new RegExp(`\\((.+)\\)(.+)`);
 const COMBAT_REGEX = new RegExp(`^([${ALL_FACTIONS}])?X([${ALL_FACTIONS}])([0-9]{1,2})([${ALL_SUITS}]\@)?([${ALL_SUITS}]\@)?`);
 
-const MOVE_ITEM_REGEX = new RegExp(`^%([${ALL_ITEMS}]{1,2})?([${ALL_FACTIONS}])?\\$?([${ALL_ITEM_STATE}])?->([${ALL_ITEM_STATE}])?([${ALL_FACTIONS}])?\\$?`);
-
 // parse a VP action, defaults to +1
 export function parseVP(action: string, takingFaction: Faction): ActionGainVP {
   const vpActionPieces = action.split('++');
@@ -58,21 +56,24 @@ export function parseCombat(action: string, takingFaction: Faction): ActionComba
 // parse a move action
 function parseMove(action: string, takingFaction: Faction): ActionMove {
   
+  const [leftSide, rightSide] = action.split('^', 2);
+
+  const destinations = parseCombineAndGroup(rightSide)
+    .map(function (rightSide: string): any {
+
+    });
+
+  const things = parseCombineAndGroup(leftSide)
+    .map(function (leftSide: string): any {
+    });
+
   const move = {
-    things: null,
-    start: null,
-    end: null
+    things: things,
+    destinations: destinations
   };
 
   return move;
 
-}
-
-function parseMoveItem(action: string, takingFaction: Faction): ActionMove {
-
-  console.log(action.match(MOVE_ITEM_REGEX));
-
-  return null;
 }
 
 function parseCard(card: string): Card {
@@ -95,7 +96,7 @@ function parseCombineAndGroup(side: string): string[] {
   } else if (side.includes('+')) {
     return side.split('+');
   } else {
-    return [side];
+    return [side || null];
   }
 }
 
@@ -104,9 +105,7 @@ export function parseReveal(action: string, takingFaction: Faction): ActionRevea
   
   const [leftSide, rightSide] = action.split('^', 2);
 
-  const targets = rightSide.includes('+')
-    ? rightSide.split('+').map(s => s || null)
-    : [rightSide || null];
+  const targets = parseCombineAndGroup(rightSide);
 
   const subjects = parseCombineAndGroup(leftSide)
     .map(function (leftSide: string): any {
@@ -115,14 +114,16 @@ export function parseReveal(action: string, takingFaction: Faction): ActionRevea
         ? leftSide.match(twoDigitNumberRegex)[1]
         : null;
       
-      const revealer = ALL_FACTIONS.split('').some(faction => leftSide.endsWith(faction))
+      const revealer = ALL_FACTIONS.split('').some(faction => leftSide && leftSide.endsWith(faction))
         ? leftSide[leftSide.length - 1] as Faction
         : null;
   
-      const card = leftSide.substring(
-        number ? number.toString().length : 0,
-        leftSide.length - (revealer ? revealer.length : 0)
-      );
+      const card = leftSide
+        ? leftSide.substring(
+          number ? number.toString().length : 0,
+          leftSide.length - (revealer ? revealer.length : 0)
+        )
+        : leftSide;
   
       return {
         number: card ? (+number || 1) : null,
@@ -153,7 +154,11 @@ export function parseAction(action: string, faction: Faction): Action {
   }
 
   if(action.includes('->')) {
-    return parseMove(action, faction);
+    if (action.includes('<->')) {
+      // TODO: Parse Corvid Trick action.
+    } else {
+      return parseMove(action, faction);
+    }
   }
 
   if(COMBAT_REGEX.test(action)) {
@@ -166,10 +171,6 @@ export function parseAction(action: string, faction: Faction): Action {
     } else {
       // TODO: Parse Corvid reveal plot
     }
-  }
-
-  if(MOVE_ITEM_REGEX.test(action)) {
-    return parseMoveItem(action, faction);
   }
 
   switch(faction) {
