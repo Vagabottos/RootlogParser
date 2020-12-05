@@ -8,7 +8,7 @@ const ALL_PIECES = Object.values(Piece).join('');
 const ALL_ITEM_STATE = Object.values(ItemState).join('');
 
 const GROUPING_REGEX = new RegExp(`\\((.+)\\)(.+)`);
-const COMBAT_REGEX = new RegExp(`^([${ALL_FACTIONS}])?X([${ALL_FACTIONS}])([0-9]{1,2})`);
+const COMBAT_REGEX = new RegExp(`^([${ALL_FACTIONS}])?X([${ALL_FACTIONS}])([0-9]{1,2})([${ALL_SUITS}]\@)?([${ALL_SUITS}]\@)?`);
 
 const MOVE_ITEM_REGEX = new RegExp(`^%([${ALL_ITEMS}]{1,2})?([${ALL_FACTIONS}])?\\$?([${ALL_ITEM_STATE}])?->([${ALL_ITEM_STATE}])?([${ALL_FACTIONS}])?\\$?`);
 
@@ -45,11 +45,13 @@ export function parseCraft(action: string): ActionCraft {
 
 // parse a combat action
 export function parseCombat(action: string, takingFaction: Faction): ActionCombat {
-  const [_, taker, target, clearing] = action.match(COMBAT_REGEX);
+  const [_, taker, target, clearing, ambush, foilAmbush] = action.match(COMBAT_REGEX);
   return {
     attacker: (taker || takingFaction) as Faction,
     defender: target as Faction,
-    clearing: +clearing
+    clearing: +clearing,
+    ambush: ambush ? ambush[0] as Suit : null,
+    foilAmbush: foilAmbush ? foilAmbush[0] as Suit : null
   };
 }
 
