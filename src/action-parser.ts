@@ -1,14 +1,15 @@
-import { Action, ActionCombat, ActionCraft, ActionDominance, ActionGainVP, ActionMove, ActionReveal, Card, Faction, Item, ItemState, Piece, Suit } from './interfaces';
+import { Action, ActionCombat, ActionCraft, ActionDominance, ActionGainVP, ActionMove, ActionReveal, Card, CardName, CorvidSpecial, Faction, Item, ItemState, Piece, SubjectReveal, Suit } from './interfaces';
 import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
 
-const ALL_FACTIONS = Object.values(Faction).join('') + '#';
+const ALL_FACTIONS = Object.values(Faction).join('');
 const ALL_SUITS = Object.values(Suit).join('');
 const ALL_ITEMS = Object.values(Item).join('');
 const ALL_PIECES = Object.values(Piece).join('');
 const ALL_ITEM_STATE = Object.values(ItemState).join('');
 
+const GROUPING_REGEX = new RegExp(`\\((.+)\\)(.+)`);
 const COMBAT_REGEX = new RegExp(`^([${ALL_FACTIONS}])?X([${ALL_FACTIONS}])([0-9]{1,2})`);
-const REVEAL_REGEX = new RegExp(`^([0-9]{1,2})?([${ALL_SUITS}])?([${ALL_FACTIONS}])?\\^([${ALL_FACTIONS}])?`);
+
 const MOVE_ITEM_REGEX = new RegExp(`^%([${ALL_ITEMS}]{1,2})?([${ALL_FACTIONS}])?\\$?([${ALL_ITEM_STATE}])?->([${ALL_ITEM_STATE}])?([${ALL_FACTIONS}])?\\$?`);
 
 // parse a VP action, defaults to +1
@@ -51,8 +52,7 @@ function parseCombat(action: string, takingFaction: Faction): ActionCombat {
 function parseMove(action: string, takingFaction: Faction): ActionMove {
   
   const move = {
-    num: 0,
-    thing: null,
+    things: null,
     start: null,
     end: null
   };
@@ -68,18 +68,64 @@ function parseMoveItem(action: string, takingFaction: Faction): ActionMove {
   return null;
 }
 
-// parse a reveal action
-function parseReveal(action: string, takingFaction: Faction): ActionReveal {
-  
-  const [_, num, suit, taker, target] = action.match(REVEAL_REGEX);
+function parseCard(card: string): Card {
+    if (!card.includes('#')) {
+        return null;
+    }
 
-  const revealer = (!taker || taker === '#') ? takingFaction : taker as Faction;
+    const cardParts = card.split('#');
+
+    return {
+        suit: (cardParts[0] || null) as Suit,
+        cardName: cardParts[1] || null
+    };
+}
+
+// parse a reveal action
+export function parseReveal(action: string, takingFaction: Faction): ActionReveal {
+  
+  const [leftSide, rightSide] = action.split('^', 2);
+
+  const targets = rightSide.includes('+')
+    ? rightSide.split('+').map(s => s || null)
+    : [rightSide || null];
+
+  function parseLeftSideOfReveal(leftSide: string): any {
+    const twoDigitNumberRegex = /^([0-9]{1,2}).*/;
+    const number = twoDigitNumberRegex.test(leftSide)
+      ? leftSide.match(twoDigitNumberRegex)[1]
+      : null;
+    
+    const revealer = ALL_FACTIONS.split('').some(faction => leftSide.endsWith(faction))
+      ? leftSide[leftSide.length - 1] as Faction
+      : null;
+
+    const card = leftSide.substring(
+      number ? number.toString().length : 0,
+      leftSide.length - (revealer ? revealer.length : 0)
+    );
+
+    return {
+      number: card ? (+number || 1) : null,
+      card: card ? parseCard(card) : null,
+      revealer: revealer || takingFaction
+    };
+  }
+
+  const subjects = (function () {
+    if (GROUPING_REGEX.test(leftSide)) {
+      const [_, grouped, outerTerm] = leftSide.match(GROUPING_REGEX);
+      return grouped.split('+').map(g => parseLeftSideOfReveal(g + outerTerm));
+    } else if (leftSide.includes('+')) {
+      return leftSide.split('+').map(g => parseLeftSideOfReveal(g));
+    } else {
+      return [parseLeftSideOfReveal(leftSide)];
+    }
+  }());
 
   return {
-    num: num ? +num : 1,
-    suit: suit as Suit,
-    revealer,
-    target: target as Faction
+    subjects: subjects as SubjectReveal[],
+    targets: targets as Faction[]
   };
 }
 
@@ -106,7 +152,7 @@ export function parseAction(action: string, faction: Faction): Action {
     return parseCombat(action, faction);
   }
 
-  if(REVEAL_REGEX.test(action)) {
+  if(action.includes('^') && !Object.values(CorvidSpecial).some(corvidPlot => action.endsWith(corvidPlot))) {
     return parseReveal(action, faction);
   }
 

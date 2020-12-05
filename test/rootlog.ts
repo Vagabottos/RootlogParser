@@ -107,6 +107,7 @@ C:t->10+11/Z%c/++3/F#domC->/Ew1->/w->1/XE1/++/t10+t11->/b_s->10/++3
 Winner: CG
 `
 
-const result = parseRootlog(test2String);
+const result = parseRootlog(testString);
 
-console.log(result);
+const util = require('util');
+console.log(util.inspect(result, {showHidden: false, depth: null}));

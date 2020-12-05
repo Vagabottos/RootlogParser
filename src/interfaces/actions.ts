@@ -20,8 +20,7 @@ export interface ActionCombat {
 }
 
 export interface ActionMove {
-  num: number;
-  thing: Card | Item | Piece;
+  things: Card[] | Item[] | Piece[];
   start: number | string;
   end: number | string;
 }
@@ -30,9 +29,13 @@ export interface ActionDominance {
   target: Faction;
 }
 
+export interface SubjectReveal {
+    number?: number,
+    card?: Card,
+    revealer: Faction
+}
+
 export interface ActionReveal {
-  num: number;
-  suit: Suit;
-  revealer: Faction;
-  target?: Faction;
+  subjects: SubjectReveal[];
+  targets: Faction[];
 }
