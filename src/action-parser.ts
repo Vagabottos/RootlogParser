@@ -44,7 +44,7 @@ export function parseCraft(action: string): ActionCraft {
 }
 
 // parse a combat action
-function parseCombat(action: string, takingFaction: Faction): ActionCombat {
+export function parseCombat(action: string, takingFaction: Faction): ActionCombat {
   const [_, taker, target, clearing] = action.match(COMBAT_REGEX);
   return {
     attacker: (taker || takingFaction) as Faction,
