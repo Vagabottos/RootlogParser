@@ -1,5 +1,6 @@
 import { Action, ActionCombat, ActionCraft, ActionDominance, ActionGainVP, ActionMove, ActionReveal, Card, CardName, CorvidSpecial, Faction, FactionBoard, Item, ItemState, Piece, PieceType, RootLocation, SubjectReveal, Suit, Thing } from './interfaces';
 import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
+import { formRegex } from './utils/regex-former';
 
 const ALL_FACTIONS = Object.values(Faction).join('');
 const ALL_SUITS = Object.values(Suit).join('');
@@ -8,6 +9,25 @@ const ALL_PIECES = Object.values(PieceType).join('');
 const ALL_ITEM_STATE = Object.values(ItemState).join('');
 
 const FACTION_BOARD_REGEX = new RegExp(`([${ALL_FACTIONS}])?\\$`);
+// These regexes have been tested, but not extensively. They do not yet contain the information unique to each faction, other than
+// pieces of the format w_x, b_x, t_x
+// With the move regex especially, be careful of the order you check for actions in: As things are now, it treats `despot->$` as
+// the unrelated letters 'despo' followed by `t->$`
+
+// These also do not work on composite actions! Please first decompose actions like (t1+t2)->5 into simple actions with the actionSplitter
+
+// const COMBAT_REGEX = formRegex('[Faction|||attacker]X<Faction|||defender><Clearing|||battleClearing>[<Suit|||defenderAmbush>@[<Suit|||attackerAmbush>@]][(<Roll|||attackerRoll>,<Roll|||defenderRoll>)]');
+const MOVE_REGEX = formRegex('[Number|||countMoved]<Component|||componentMoved>[Location|||origin]->[Location|||destination]');
+const MOVE_PIECE_REGEX = formRegex('[Number|||countMoved]<Piece|||pieceMoved>[Location|||origin]->[Location|||destination]');
+const MOVE_CARD_REGEX = formRegex('[Number|||countMoved]<Card|||cardMoved>[Location|||origin]->[Location|||destination]');
+// const MOVE_ITEM_REGEX = formRegex('[Number|||countMoved]<Item|||itemMoved>[Location|||origin]->[Location|||destination]');
+const REVEAL_REGEX = formRegex('[Number|||countRevealed][Card||cardRevealed][Faction|||revealingFaction]\\^[Faction|||revealedFaction]');
+const SCORE_VP_REGEX = formRegex('[Faction|||scoringFaction]++[Number|||points]');
+const REDUCE_VP_REGEX = formRegex('[Faction|||scoringFaction]--[Number|||points]');
+const CRAFT_REGEX = formRegex('Z<Craftable|||crafted>');
+const REMOVE_FACTION_MARKER_REGEX = formRegex('++-><FactionBoard|||targetFaction>');
+const CLEAR_MOUNTAIN_PATH_REGEX = formRegex('<Clearing|||lowerClearing>_<Clearing|||upperClearing>->');
+
 const GROUPING_REGEX = new RegExp(`\\((.+)\\)(.+)`);
 const COMBAT_REGEX = new RegExp(`^([${ALL_FACTIONS}])?X([${ALL_FACTIONS}])([0-9]{1,2})([${ALL_SUITS}]\@)?([${ALL_SUITS}]\@)?`);
 
