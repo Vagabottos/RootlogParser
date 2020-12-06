@@ -1,4 +1,4 @@
-import { Action, ActionCombat, ActionCraft, ActionDominance, ActionGainVP, ActionMove, ActionReveal, Card, CardName, CorvidSpecial, Faction, Item, ItemState, Piece, PieceType, RootLocation, SubjectReveal, Suit, Thing } from './interfaces';
+import { Action, ActionCombat, ActionCraft, ActionDominance, ActionGainVP, ActionMove, ActionReveal, Card, CardName, CorvidSpecial, Faction, FactionBoard, Item, ItemState, Piece, PieceType, RootLocation, SubjectReveal, Suit, Thing } from './interfaces';
 import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
 
 const ALL_FACTIONS = Object.values(Faction).join('');
@@ -7,6 +7,7 @@ const ALL_ITEMS = Object.values(Item).join('');
 const ALL_PIECES = Object.values(PieceType).join('');
 const ALL_ITEM_STATE = Object.values(ItemState).join('');
 
+const FACTION_BOARD_REGEX = new RegExp(`([${ALL_FACTIONS}])?\\$`);
 const GROUPING_REGEX = new RegExp(`\\((.+)\\)(.+)`);
 const COMBAT_REGEX = new RegExp(`^([${ALL_FACTIONS}])?X([${ALL_FACTIONS}])([0-9]{1,2})([${ALL_SUITS}]\@)?([${ALL_SUITS}]\@)?`);
 
@@ -54,7 +55,23 @@ export function parseCombat(action: string, takingFaction: Faction): ActionComba
 }
 
 function parseLocation(location: string, takingFaction: Faction): RootLocation {
-  return (+location || null) as RootLocation;
+  if (location === undefined || location === null) {
+    return null;
+  } else if (FACTION_BOARD_REGEX.test(location)) {
+    const [_, faction] = location.match(FACTION_BOARD_REGEX);
+    return {
+      faction: faction || takingFaction
+    } as FactionBoard;
+  } else if (Object.values(Faction).includes(location as Faction)) {
+    return location as Faction;
+  } else if (Object.values(ItemState).includes(location as ItemState)) {
+    return location as ItemState;
+  } else if (+location !== NaN) {
+    return +location;
+  }
+
+  console.error(`Could not parse location: "${location}"`);
+  return null as RootLocation;
 }
 
 // parse a move action
@@ -74,11 +91,11 @@ export function parseMove(action: string, takingFaction: Faction): ActionMove {
         : null;
 
       const ITEM_REGEX_STRING = `\%[${ALL_ITEMS}]`;
-      const PIECE_REGEX_STRING = `[${ALL_FACTIONS}]?[${ALL_PIECES}]`;
+      const PIECE_REGEX_STRING = `[${ALL_FACTIONS}]?[${ALL_PIECES}]_?[swrkfrmcbe]?`;
       const CARD_REGEX_STRING = `[${ALL_SUITS}]?#[a-z]*`;
       const THING_REGEX = new RegExp(`(${ITEM_REGEX_STRING}|${PIECE_REGEX_STRING}|${CARD_REGEX_STRING})(.*)`);
 
-      const [_, thingString, locationString] = leftSide.substring(number ? number.length : 0).match(THING_REGEX);
+      const [_, thingString, startingLocationString] = leftSide.substring(number ? number.length : 0).match(THING_REGEX);
 
       const thing = (function parseThing(thingString: string): Piece | Card | Item {
         if (new RegExp(ITEM_REGEX_STRING).test(thingString)) {
@@ -95,12 +112,14 @@ export function parseMove(action: string, takingFaction: Faction): ActionMove {
         return null;
       }(thingString));
 
-      const location = parseLocation(locationString, takingFaction);
+      const startingLocation = startingLocationString
+        ? parseLocation(startingLocationString, takingFaction)
+        : null;
 
       return {
         number: +number || 1,
         thing: thing,
-        start: location
+        start: startingLocation
       } as Thing;
     });
 

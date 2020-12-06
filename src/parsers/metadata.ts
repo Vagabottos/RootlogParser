@@ -57,7 +57,7 @@ export function parseTurn(line: string): Turn {
   turn.taker = taker as Faction;
 
   unparsedActions.split(/[\/;]/).forEach(action => {
-    const actionObj = parseAction(action, turn.taker) || {action: action};
+    const actionObj = parseAction(action, turn.taker) || {raw: action};
     actionObj.raw = action;
     turn.actions.push(actionObj);
   });

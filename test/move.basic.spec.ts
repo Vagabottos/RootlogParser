@@ -1,7 +1,7 @@
 import test from 'ava-ts';
 
 import { parseMove } from '../src/action-parser';
-import { Faction, Piece } from '../src/interfaces/rootgame';
+import { Card, Faction, FactionBoard, Item, ItemState, Piece } from '../src/interfaces/rootgame';
 
 test('Move - place one of current player\'s warriors', t => {
 
@@ -112,6 +112,74 @@ test('Move - remove four of current player\'s tokens in separate clearings', t =
   t.is((result.things[3].thing as Piece).faction, 'C');
   t.is((result.things[3].thing as Piece).pieceType, 't');
   t.is(result.things[3].start, 5);
+
+  t.is(result.destinations[0], null);
+});
+
+test('Move - place current player\'s warriors on faction board', t => {
+
+  const result = parseMove('w->$', 'A' as Faction);
+
+  t.is(result.things[0].number, 1);
+  t.is((result.things[0].thing as Piece).faction, 'A');
+  t.is((result.things[0].thing as Piece).pieceType, 'w');
+  t.is(result.things[0].start, null);
+
+  t.is((result.destinations[0] as FactionBoard).faction, 'A');
+});
+
+test('Move - place current player\'s warriors on faction board', t => {
+
+  const result = parseMove('w$->', 'L' as Faction);
+
+  t.is(result.things[0].number, 1);
+  t.is((result.things[0].thing as Piece).faction, 'L');
+  t.is((result.things[0].thing as Piece).pieceType, 'w');
+  t.is((result.things[0].start as FactionBoard).faction, 'L');
+
+  t.is(result.destinations[0], null);
+});
+
+test('Move - place cards onto Woodland Alliance\'s faction board', t => {
+
+  const result = parseMove('2R#C->A$', 'C' as Faction);
+
+  t.is(result.things[0].number, 2);
+  t.is((result.things[0].thing as Card).suit, 'R');
+  t.is(result.things[0].start, 'C' as Faction);
+
+  t.is((result.destinations[0] as FactionBoard).faction, 'A');
+});
+
+test('Move - exhaust sword', t => {
+
+  const result = parseMove('%s->e', 'O' as Faction);
+
+  t.is(result.things[0].number, 1);
+  t.is(result.things[0].thing as Item, 's');
+  t.is(result.things[0].start, null);
+
+  t.is(result.destinations[0], 'e' as ItemState);
+});
+
+test('Move - refresh sword', t => {
+
+  const result = parseMove('%s->r', 'V' as Faction);
+
+  t.is(result.things[0].number, 1);
+  t.is(result.things[0].thing as Item, 's');
+  t.is(result.things[0].start, null);
+
+  t.is(result.destinations[0], 'r' as ItemState);
+});
+
+test('Move - remove sword', t => {
+
+  const result = parseMove('%s->', 'V' as Faction);
+
+  t.is(result.things[0].number, 1);
+  t.is(result.things[0].thing as Item, 's');
+  t.is(result.things[0].start, null);
 
   t.is(result.destinations[0], null);
 });

@@ -178,7 +178,11 @@ export interface Forest {
   clearings: number[]
 }
 
-export type RootLocation = ItemState | Faction | number | Forest;
+export interface FactionBoard {
+  faction: Faction
+}
+
+export type RootLocation = ItemState | Faction | number | Forest | FactionBoard;
 
 export interface Card {
     suit?: Suit,
