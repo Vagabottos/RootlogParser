@@ -161,6 +161,8 @@ export function formRegex(pseudoRegex: string): RegExp {
         case "(":
         case ")":
         case "+":
+        case "?":
+        case "^":
           currentString += `\\${c}`;
           break;
         default:
@@ -170,5 +172,5 @@ export function formRegex(pseudoRegex: string): RegExp {
     parsedRegexString += currentString;
     finalParsedRegexString += parsedRegexString;
   });
-  return new RegExp(finalParsedRegexString);
+  return new RegExp(`^${finalParsedRegexString}$`);
 }
