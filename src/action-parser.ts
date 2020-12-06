@@ -1,13 +1,14 @@
-import { Action, ActionCombat, ActionCraft, ActionDominance, ActionGainVP, ActionMove, ActionReveal, Card, CardName, CorvidSpecial, Faction, Item, ItemState, Piece, SubjectReveal, Suit } from './interfaces';
+import { Action, ActionCombat, ActionCraft, ActionDominance, ActionGainVP, ActionMove, ActionReveal, Card, CardName, CorvidSpecial, Faction, FactionBoard, Item, ItemState, Piece, PieceType, RootLocation, SubjectReveal, Suit, Thing } from './interfaces';
 import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
 import { formRegex } from './utils/regex-former';
 
 const ALL_FACTIONS = Object.values(Faction).join('');
 const ALL_SUITS = Object.values(Suit).join('');
 const ALL_ITEMS = Object.values(Item).join('');
-const ALL_PIECES = Object.values(Piece).join('');
+const ALL_PIECES = Object.values(PieceType).join('');
 const ALL_ITEM_STATE = Object.values(ItemState).join('');
 
+const FACTION_BOARD_REGEX = new RegExp(`([${ALL_FACTIONS}])?\\$`);
 // These regexes have been tested, but not extensively. They do not yet contain the information unique to each faction, other than
 // pieces of the format w_x, b_x, t_x
 // With the move regex especially, be careful of the order you check for actions in: As things are now, it treats `despot->$` as
@@ -28,25 +29,28 @@ const REMOVE_FACTION_MARKER_REGEX = formRegex('++-><FactionBoard|||targetFaction
 const CLEAR_MOUNTAIN_PATH_REGEX = formRegex('<Clearing|||lowerClearing>_<Clearing|||upperClearing>->');
 
 const GROUPING_REGEX = new RegExp(`\\((.+)\\)(.+)`);
-const COMBAT_REGEX = new RegExp(`^([${ALL_FACTIONS}])?X([${ALL_FACTIONS}])([0-9]{1,2})`);
-
-const MOVE_ITEM_REGEX = new RegExp(`^%([${ALL_ITEMS}]{1,2})?([${ALL_FACTIONS}])?\\$?([${ALL_ITEM_STATE}])?->([${ALL_ITEM_STATE}])?([${ALL_FACTIONS}])?\\$?`);
+const COMBAT_REGEX = new RegExp(`^([${ALL_FACTIONS}])?X([${ALL_FACTIONS}])([0-9]{1,2})([${ALL_SUITS}]\@)?([${ALL_SUITS}]\@)?`);
 
 // parse a VP action, defaults to +1
-// TODO: include faction
-function parseVP(action: string): ActionGainVP {
-  const count = action.split('++')[1] || '1';
-  return { vp: +count };
+export function parseVP(action: string, takingFaction: Faction): ActionGainVP {
+  const vpActionPieces = action.split('++');
+  const count = vpActionPieces[1] || '1';
+  return {
+    vp: +count,
+    faction: (vpActionPieces[0] || takingFaction) as Faction
+  };
 }
 
-// parse a dominance action
-// TODO: parse dom
+// parse a dominance/coalition action
+// TODO: parse target
 function parseDominance(action: string): ActionDominance {
-  return { target: Faction.Marquise };
+  return {
+    target: Faction.Marquise
+  };
 }
 
 // parse a craft card or item
-function parseCraft(action: string): ActionCraft {
+export function parseCraft(action: string): ActionCraft {
   const craft = action.split('Z')[1];
 
   // craft an item
@@ -55,37 +59,97 @@ function parseCraft(action: string): ActionCraft {
   }
 
   // craft a card
-  return { craftCard: craft[0] as Card };
+  return { craftCard: craft as CardName };
 }
 
 // parse a combat action
-function parseCombat(action: string, takingFaction: Faction): ActionCombat {
-  const [_, taker, target, clearing] = action.match(COMBAT_REGEX);
+export function parseCombat(action: string, takingFaction: Faction): ActionCombat {
+  const [_, taker, target, clearing, ambush, foilAmbush] = action.match(COMBAT_REGEX);
   return {
     attacker: (taker || takingFaction) as Faction,
     defender: target as Faction,
-    clearing: +clearing
+    clearing: +clearing,
+    ambush: ambush ? ambush[0] as Suit : null,
+    foilAmbush: foilAmbush ? foilAmbush[0] as Suit : null
   };
 }
 
+function parseLocation(location: string, takingFaction: Faction): RootLocation {
+  if (location === undefined || location === null) {
+    return null;
+  } else if (FACTION_BOARD_REGEX.test(location)) {
+    const [_, faction] = location.match(FACTION_BOARD_REGEX);
+    return {
+      faction: faction || takingFaction
+    } as FactionBoard;
+  } else if (Object.values(Faction).includes(location as Faction)) {
+    return location as Faction;
+  } else if (Object.values(ItemState).includes(location as ItemState)) {
+    return location as ItemState;
+  } else if (+location !== NaN) {
+    return +location;
+  }
+
+  console.error(`Could not parse location: "${location}"`);
+  return null as RootLocation;
+}
+
 // parse a move action
-function parseMove(action: string, takingFaction: Faction): ActionMove {
+export function parseMove(action: string, takingFaction: Faction): ActionMove {
   
+  const [leftSide, rightSide] = action.split('->', 2);
+
+  const destinations = parseCombineAndGroup(rightSide)
+    .map(function (rightSide: string): any {
+      return parseLocation(rightSide, takingFaction);
+    });
+  const things = parseCombineAndGroup(leftSide)
+    .map(function (leftSide: string): Thing {
+      const twoDigitNumberRegex = /^([0-9]{1,2}).*/;
+      const number = twoDigitNumberRegex.test(leftSide)
+        ? leftSide.match(twoDigitNumberRegex)[1]
+        : null;
+
+      const ITEM_REGEX_STRING = `\%[${ALL_ITEMS}]`;
+      const PIECE_REGEX_STRING = `[${ALL_FACTIONS}]?[${ALL_PIECES}]_?[swrkfrmcbe]?`;
+      const CARD_REGEX_STRING = `[${ALL_SUITS}]?#[a-z]*`;
+      const THING_REGEX = new RegExp(`(${ITEM_REGEX_STRING}|${PIECE_REGEX_STRING}|${CARD_REGEX_STRING})(.*)`);
+
+      const [_, thingString, startingLocationString] = leftSide.substring(number ? number.length : 0).match(THING_REGEX);
+
+      const thing = (function parseThing(thingString: string): Piece | Card | Item {
+        if (new RegExp(ITEM_REGEX_STRING).test(thingString)) {
+          return thingString[1] as Item;
+        } else if (new RegExp(PIECE_REGEX_STRING).test(thingString)) {
+          const [_, faction, piece] = thingString.match(new RegExp(`([${ALL_FACTIONS}])?(.+)`));
+          return {
+            faction: faction as Faction || takingFaction,
+            pieceType: piece as PieceType
+          }
+        } else if (new RegExp(CARD_REGEX_STRING).test(thingString)) {
+          return parseCard(thingString);
+        }
+        return null;
+      }(thingString));
+
+      const startingLocation = startingLocationString
+        ? parseLocation(startingLocationString, takingFaction)
+        : null;
+
+      return {
+        number: +number || 1,
+        thing: thing,
+        start: startingLocation
+      } as Thing;
+    });
+
   const move = {
-    things: null,
-    start: null,
-    end: null
+    things: things,
+    destinations: destinations
   };
 
   return move;
 
-}
-
-function parseMoveItem(action: string, takingFaction: Faction): ActionMove {
-
-  console.log(action.match(MOVE_ITEM_REGEX));
-
-  return null;
 }
 
 function parseCard(card: string): Card {
@@ -101,47 +165,48 @@ function parseCard(card: string): Card {
     };
 }
 
+function parseCombineAndGroup(side: string): string[] {
+  if (GROUPING_REGEX.test(side)) {
+    const [_, grouped, outerTerm] = side.match(GROUPING_REGEX);
+    return grouped.split('+').map(g => g + outerTerm);
+  } else if (side.includes('+')) {
+    return side.split('+');
+  } else {
+    return [side || null];
+  }
+}
+
 // parse a reveal action
 export function parseReveal(action: string, takingFaction: Faction): ActionReveal {
   
   const [leftSide, rightSide] = action.split('^', 2);
 
-  const targets = rightSide.includes('+')
-    ? rightSide.split('+').map(s => s || null)
-    : [rightSide || null];
+  const targets = parseCombineAndGroup(rightSide);
 
-  function parseLeftSideOfReveal(leftSide: string): any {
-    const twoDigitNumberRegex = /^([0-9]{1,2}).*/;
-    const number = twoDigitNumberRegex.test(leftSide)
-      ? leftSide.match(twoDigitNumberRegex)[1]
-      : null;
-    
-    const revealer = ALL_FACTIONS.split('').some(faction => leftSide.endsWith(faction))
-      ? leftSide[leftSide.length - 1] as Faction
-      : null;
-
-    const card = leftSide.substring(
-      number ? number.toString().length : 0,
-      leftSide.length - (revealer ? revealer.length : 0)
-    );
-
-    return {
-      number: card ? (+number || 1) : null,
-      card: card ? parseCard(card) : null,
-      revealer: revealer || takingFaction
-    };
-  }
-
-  const subjects = (function () {
-    if (GROUPING_REGEX.test(leftSide)) {
-      const [_, grouped, outerTerm] = leftSide.match(GROUPING_REGEX);
-      return grouped.split('+').map(g => parseLeftSideOfReveal(g + outerTerm));
-    } else if (leftSide.includes('+')) {
-      return leftSide.split('+').map(g => parseLeftSideOfReveal(g));
-    } else {
-      return [parseLeftSideOfReveal(leftSide)];
-    }
-  }());
+  const subjects = parseCombineAndGroup(leftSide)
+    .map(leftSide => {
+      const twoDigitNumberRegex = /^([0-9]{1,2}).*/;
+      const number = twoDigitNumberRegex.test(leftSide)
+        ? leftSide.match(twoDigitNumberRegex)[1]
+        : null;
+      
+      const revealer = ALL_FACTIONS.split('').some(faction => leftSide && leftSide.endsWith(faction))
+        ? leftSide[leftSide.length - 1] as Faction
+        : null;
+  
+      const card = leftSide
+        ? leftSide.substring(
+          number ? number.toString().length : 0,
+          leftSide.length - (revealer ? revealer.length : 0)
+        )
+        : leftSide;
+  
+      return {
+        number: card ? (+number || 1) : null,
+        card: card ? parseCard(card) : null,
+        revealer: revealer || takingFaction
+      };
+    });
 
   return {
     subjects: subjects as SubjectReveal[],
@@ -150,10 +215,10 @@ export function parseReveal(action: string, takingFaction: Faction): ActionRevea
 }
 
 // parse out an action 
-export function parseAction(action: string, faction: Faction): Action {
+export function parseAction(action: string, faction: Faction): any {
 
   if(action.includes('++') && !action.includes('->')) {
-    return parseVP(action);
+    return parseVP(action, faction);
   }
 
   if(action.includes('++') && action.includes('->')) {
@@ -165,19 +230,25 @@ export function parseAction(action: string, faction: Faction): Action {
   }
 
   if(action.includes('->')) {
-    return parseMove(action, faction);
+    if (action.includes('<->')) {
+      // TODO: Parse Corvid Trick action.
+    } else if (action.startsWith('$_')) {
+      // TODO: Parse special faction board actions.
+    } else {
+      return parseMove(action, faction);
+    }
   }
 
   if(COMBAT_REGEX.test(action)) {
     return parseCombat(action, faction);
   }
 
-  if(action.includes('^') && !Object.values(CorvidSpecial).some(corvidPlot => action.endsWith(corvidPlot))) {
-    return parseReveal(action, faction);
-  }
-
-  if(MOVE_ITEM_REGEX.test(action)) {
-    return parseMoveItem(action, faction);
+  if(action.includes('^')) {
+    if (!Object.values(CorvidSpecial).some(corvidPlot => action.endsWith(corvidPlot))) {
+      return parseReveal(action, faction);
+    } else {
+      // TODO: Parse Corvid reveal plot
+    }
   }
 
   switch(faction) {

@@ -110,4 +110,8 @@ Winner: CG
 const result = parseRootlog(testString);
 
 const util = require('util');
+const fs = require('fs');
+fs.writeFile("rootlog-test.json", JSON.stringify(result), (er, r) => {
+
+});
 console.log(util.inspect(result, {showHidden: false, depth: null}));

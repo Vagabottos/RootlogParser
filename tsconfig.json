@@ -3,9 +3,10 @@
      "lib": [
         "es5",
         "es6",
+        "es2018",
         "dom"
      ],
-     "target": "es5",
+     "target": "es2018",
      "module": "commonjs",
      "moduleResolution": "node",
      "outDir": "./build",
