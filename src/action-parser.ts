@@ -1,10 +1,10 @@
-import { Action, ActionCombat, ActionCraft, ActionDominance, ActionGainVP, ActionMove, ActionReveal, Card, CardName, CorvidSpecial, Faction, Item, ItemState, Piece, SubjectReveal, Suit } from './interfaces';
+import { Action, ActionCombat, ActionCraft, ActionDominance, ActionGainVP, ActionMove, ActionReveal, Card, CardName, CorvidSpecial, Faction, Item, ItemState, Piece, PieceType, RootLocation, SubjectReveal, Suit, Thing } from './interfaces';
 import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
 
 const ALL_FACTIONS = Object.values(Faction).join('');
 const ALL_SUITS = Object.values(Suit).join('');
 const ALL_ITEMS = Object.values(Item).join('');
-const ALL_PIECES = Object.values(Piece).join('');
+const ALL_PIECES = Object.values(PieceType).join('');
 const ALL_ITEM_STATE = Object.values(ItemState).join('');
 
 const GROUPING_REGEX = new RegExp(`\\((.+)\\)(.+)`);
@@ -53,18 +53,55 @@ export function parseCombat(action: string, takingFaction: Faction): ActionComba
   };
 }
 
+function parseLocation(location: string, takingFaction: Faction): RootLocation {
+  return (+location || null) as RootLocation;
+}
+
 // parse a move action
-function parseMove(action: string, takingFaction: Faction): ActionMove {
+export function parseMove(action: string, takingFaction: Faction): ActionMove {
   
-  const [leftSide, rightSide] = action.split('^', 2);
+  const [leftSide, rightSide] = action.split('->', 2);
 
   const destinations = parseCombineAndGroup(rightSide)
     .map(function (rightSide: string): any {
-
+      return parseLocation(rightSide, takingFaction);
     });
-
   const things = parseCombineAndGroup(leftSide)
-    .map(function (leftSide: string): any {
+    .map(function (leftSide: string): Thing {
+      const twoDigitNumberRegex = /^([0-9]{1,2}).*/;
+      const number = twoDigitNumberRegex.test(leftSide)
+        ? leftSide.match(twoDigitNumberRegex)[1]
+        : null;
+
+      const ITEM_REGEX_STRING = `\%[${ALL_ITEMS}]`;
+      const PIECE_REGEX_STRING = `[${ALL_FACTIONS}]?[${ALL_PIECES}]`;
+      const CARD_REGEX_STRING = `[${ALL_SUITS}]?#[a-z]*`;
+      const THING_REGEX = new RegExp(`(${ITEM_REGEX_STRING}|${PIECE_REGEX_STRING}|${CARD_REGEX_STRING})(.*)`);
+
+      const [_, thingString, locationString] = leftSide.substring(number ? number.length : 0).match(THING_REGEX);
+
+      const thing = (function parseThing(thingString: string): Piece | Card | Item {
+        if (new RegExp(ITEM_REGEX_STRING).test(thingString)) {
+          return thingString[1] as Item;
+        } else if (new RegExp(PIECE_REGEX_STRING).test(thingString)) {
+          const [_, faction, piece] = thingString.match(new RegExp(`([${ALL_FACTIONS}])?(.+)`));
+          return {
+            faction: faction as Faction || takingFaction,
+            pieceType: piece as PieceType
+          }
+        } else if (new RegExp(CARD_REGEX_STRING).test(thingString)) {
+          return parseCard(thingString);
+        }
+        return null;
+      }(thingString));
+
+      const location = parseLocation(locationString, takingFaction);
+
+      return {
+        number: +number || 1,
+        thing: thing,
+        start: location
+      } as Thing;
     });
 
   const move = {
@@ -108,7 +145,7 @@ export function parseReveal(action: string, takingFaction: Faction): ActionRevea
   const targets = parseCombineAndGroup(rightSide);
 
   const subjects = parseCombineAndGroup(leftSide)
-    .map(function (leftSide: string): any {
+    .map(leftSide => {
       const twoDigitNumberRegex = /^([0-9]{1,2}).*/;
       const number = twoDigitNumberRegex.test(leftSide)
         ? leftSide.match(twoDigitNumberRegex)[1]
@@ -139,7 +176,7 @@ export function parseReveal(action: string, takingFaction: Faction): ActionRevea
 }
 
 // parse out an action 
-export function parseAction(action: string, faction: Faction): Action {
+export function parseAction(action: string, faction: Faction): any {
 
   if(action.includes('++') && !action.includes('->')) {
     return parseVP(action, faction);
@@ -156,6 +193,8 @@ export function parseAction(action: string, faction: Faction): Action {
   if(action.includes('->')) {
     if (action.includes('<->')) {
       // TODO: Parse Corvid Trick action.
+    } else if (action.startsWith('$_')) {
+      // TODO: Parse special faction board actions.
     } else {
       return parseMove(action, faction);
     }

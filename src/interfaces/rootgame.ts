@@ -23,7 +23,12 @@ export enum Faction {
   Corvid = 'P'
 }
 
-export enum Piece {
+export interface Piece {
+  faction: Faction;
+  pieceType: PieceType
+}
+
+export enum PieceType {
   Warrior = 'w',
   Pawn = 'p',
   Building = 'b',
@@ -168,6 +173,12 @@ export enum QuestCard {
   Logs = 'logs',
   Shed = 'shed'
 }
+
+export interface Forest {
+  clearings: number[]
+}
+
+export type RootLocation = ItemState | Faction | number | Forest;
 
 export interface Card {
     suit?: Suit,
