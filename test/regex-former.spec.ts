@@ -30,10 +30,24 @@ test('Correctly forms regex for crafting items', t => {
 
 });
 
-test('Does not forms regex for crafting cards with invalid names', t => {
+test('Correctly forms regex for crafting cards using their full names', t => {
 
   const craftingRegex = formRegex('Z<Craftable|||crafted>');
   let result = 'Zambush'.match(craftingRegex);
+  t.is(result.groups.crafted, 'ambush');
+
+  result = 'Zboatbuilders'.match(craftingRegex);
+  t.is(result.groups.crafted, 'boatbuilders');
+  
+  result = 'Zfoxfolksteel'.match(craftingRegex);
+  t.is(result.groups.crafted, 'foxfolksteel');
+
+});
+
+test('Does not forms regex for crafting cards with invalid names', t => {
+
+  const craftingRegex = formRegex('Z<Craftable|||crafted>');
+  let result = 'Zambush!'.match(craftingRegex);
   t.is(result, null);
   
   result = 'ZTun'.match(craftingRegex);
@@ -304,7 +318,7 @@ test('Correctly forms regex for battles', t => {
   t.is(result.groups.attackerAmbush, undefined);
   t.is(result.groups.attackerRoll, undefined);
   t.is(result.groups.defenderRoll, undefined);
-  
+
   result = 'CXA7B@'.match(moveRegex);
   t.is(result.groups.attacker, 'C');
   t.is(result.groups.defender, 'A');
