@@ -62,6 +62,13 @@ export enum EyrieSpecial {
   Build = 'b'
 }
 
+export enum EyrieLeaderSpecial {
+  Builder = 'builder',
+  Charismatic = 'charismatic',
+  Commander = 'commander',
+  Despot = 'despot'
+}
+
 export enum WoodlandSpecial {
   FoxBase = 'b_f',
   RabbitBase = 'b_r',
@@ -72,6 +79,18 @@ export enum VagabondItemSpecial {
   Satchel = 's',
   Damaged = 'd',
   Track = 't'
+}
+
+export enum VagabondCharacterSpecial {
+  Arbiter = 'arbiter',
+  Adventurer = 'adventurer',
+  Harrier = 'harrier',
+  Ranger = 'ranger',
+  Ronin = 'ronin',
+  Scoundrel = 'scoundrel',
+  Thief = 'thief',
+  Tinker = 'tinker',
+  Vagrant = 'vagrant'
 }
 
 export enum VagabondRelationshipStatus {
@@ -100,10 +119,27 @@ export enum LizardSpecial {
   MouseGarden = 'b_m'
 }
 
+export enum LizardOutcastSpecial {
+  Outcast = 'o',
+  HatedOutcast = 'ho'
+}
+
 export enum DuchySpecial {
   Citadel = 'b_c',
   Market = 'b_m',
   Burrow = '0'
+}
+
+export enum DuchyMinisterSpecial {
+  Captain = 'captain',
+  Marshal = 'marshal',
+  Foremole = 'foremole',
+  Banker = 'banker',
+  Brigadier = 'brigadier',
+  Mayor = 'mayor',
+  Baron = 'baronofdirt',
+  Duchess = 'duchessofmud',
+  Earl = 'earlofstone'
 }
 
 export enum CorvidSpecial {
@@ -118,43 +154,93 @@ export enum CardName {
 
   // all decks
   Ambush = '@',
+  AmbushFullName = 'ambush',
   Dominance = 'dom',
+  DominanceFullName = 'dominance',
+  Anvil = 'anvil',
+  ArmsTrader = 'armstrader',
+  BakeSale = 'bakesale',
+  BirdyBindle = 'birdybindle',
+  Crossbow = 'crossbow',
+  FoxfolkSteel = 'foxfolksteel',
+  GentlyUsedKnapsack = 'gentlyusedknapsack',
+  Investments = 'investments',
+  MouseInASack = 'mouseinasack',
+  ProtectionRacket = 'protectionracket',
+  RootTea = 'roottea',
+  SmugglersTrail = 'smugglerstrail',
+  Sword = 'sword',
+  TravelGear = 'travelgear',
+  WoodlandRunners = 'woodlandrunners',
 
   // base deck
   Armor = 'armor',
+  ArmorFullName = 'armorers',
   BetterBurrowBank = 'bank',
+  BetterBurrowBankFullName = 'betterburrowbank',
   BrutalTactics = 'brutal',
+  BrutalTacticsFullName = 'brutaltactics',
   CommandWarren = 'command',
+  CommandWarrenFullName = 'commandwarren',
   Cob = 'cob',
+  CobFullName = 'cobbler',
   Codebreakers = 'codeb',
+  CodebreakersFullName = 'codebreakers',
   FoxFavor = 'ffavor',
+  FoxFavorFullName = 'favorofthefoxes',
   MouseFavor = 'mfavor',
+  MouseFavorFullName = 'favorofthemice',
   RabbitFavor = 'rfavor',
+  RabbitFavorFullName = 'favoroftherabbits',
+  GenericFavor = 'favor',
   Royal = 'royal',
+  RoyalFullName = 'royalclaim',
   Sappers = 'sap',
+  SappersFullName = 'sappers',
   Scout = 'scout',
+  ScoutFullName = 'scoutingparty',
   StandAndDeliver = 'stand',
+  StandAndDeliverFullName = 'standanddeliver',
   Tax = 'tax',
+  TaxFullName = 'taxcollectors',
 
   // exiles and partisans
   Boat = 'boat',
+  BoatFullName = 'boatbuilders',
   CharmOffensive = 'charm',
+  CharmOffensiveFullName = 'charmoffensive',
   CoffinMakers = 'coffin',
-  CombatPlans = 'cplans',
+  CoffinMakersFullName = 'coffinmakers',
+  CorvidPlans = 'cplans',
+  CorvidPlansFullName = 'corvidplanners',
   EyrieEmigre = 'emi',
+  EyrieEmigreFullName = 'eyrieemigre',
   FalseOrders = 'false',
+  FalseOrdersFullName = 'falseorders',
   FoxPartisans = 'fpart',
+  FoxPartisansFullName = 'foxpartisans',
   RabbitPartisans = 'rpart',
+  RabbitPartisansFullName = 'rabbitpartisans',
   MousePartisans = 'mpart',
+  MousePartisansFullName = 'mousepartisans',
   Informers = 'inform',
+  InformersFullName = 'informants',
   LeagueOfExtraordinaryMice = 'league',
+  LeagueOfExtraordinaryMiceFullName = 'leagueofextraordinarymice',
   Engrave = 'engrave',
+  EngraveFullName = 'masterengravers',
   MurineBroker = 'murine',
+  MurineBrokerFullName = 'murinebrokers',
   PropagandaBureau = 'prop',
+  PropagandaBureauFullName = 'propagandabureau',
   Saboteurs = 'sabo',
+  SaboteursFullName = 'saboteurs',
   SoupKitchens = 'soup',
+  SoupKitchensFullName = 'soupkitchens',
   SwapMeet = 'swap',
-  Tun = 'tun'
+  SwapMeetFullName = 'swapmeet',
+  Tun = 'tun',
+  TunFullName = 'tunnels'
 }
 
 export enum QuestCard {
@@ -168,6 +254,17 @@ export enum QuestCard {
   Logs = 'logs',
   Shed = 'shed'
 }
+
+export const SpecialCardName = Object.assign({}, EyrieLeaderSpecial, VagabondCharacterSpecial, DuchyMinisterSpecial);
+export type SpecialCardName = typeof SpecialCardName;
+
+// TODO: Might need this, unsure
+// export interface Location {
+//     index?: Number,                   // Clearing
+//     surroundingClearings?: Number[],  // Forest
+//     faction: Faction,                 // Supply or Hand
+//     // itemState
+// }
 
 export interface Card {
     suit?: Suit,
@@ -187,6 +284,6 @@ export interface RootGame {
   pool?: Faction[];                             // the faction pool (if using a draft)
   players: Partial<Record<Faction, string>>;    // { [factionkey]: player }
   turns: Turn[];                                // all of the game turns in order
-  winner: string;                               // the winner of the game
+  winner: Faction[];                            // the winner(s) of the game
 
 }

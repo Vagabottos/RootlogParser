@@ -1,91 +1,129 @@
-import { Action, ActionCombat, ActionCraft, ActionDominance, ActionGainVP, ActionMove, ActionReveal, Card, CardName, CorvidSpecial, Faction, Item, ItemState, Piece, SubjectReveal, Suit } from './interfaces';
+import { Action, ActionClearPath, ActionCombat, ActionCraft, ActionDominance, ActionGainVP, ActionMove, ActionReveal, ActionTriggerPlot, ActionUpdateFunds, Card, Faction, Item, Suit } from './interfaces';
 import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
+import { splitAction } from './utils/action-splitter';
 import { formRegex } from './utils/regex-former';
 
-const ALL_FACTIONS = Object.values(Faction).join('');
-const ALL_SUITS = Object.values(Suit).join('');
-const ALL_ITEMS = Object.values(Item).join('');
-const ALL_PIECES = Object.values(Piece).join('');
-const ALL_ITEM_STATE = Object.values(ItemState).join('');
-
-// These regexes have been tested, but not extensively. They do not yet contain the information unique to each faction, other than
-// pieces of the format w_x, b_x, t_x
-// With the move regex especially, be careful of the order you check for actions in: As things are now, it treats `despot->$` as
-// the unrelated letters 'despo' followed by `t->$`
-
-// These also do not work on composite actions! Please first decompose actions like (t1+t2)->5 into simple actions with the actionSplitter
-
-// const COMBAT_REGEX = formRegex('[Faction|||attacker]X<Faction|||defender><Clearing|||battleClearing>[<Suit|||defenderAmbush>@[<Suit|||attackerAmbush>@]][(<Roll|||attackerRoll>,<Roll|||defenderRoll>)]');
-const MOVE_REGEX = formRegex('[Number|||countMoved]<Component|||componentMoved>[Location|||origin]->[Location|||destination]');
-const MOVE_PIECE_REGEX = formRegex('[Number|||countMoved]<Piece|||pieceMoved>[Location|||origin]->[Location|||destination]');
-const MOVE_CARD_REGEX = formRegex('[Number|||countMoved]<Card|||cardMoved>[Location|||origin]->[Location|||destination]');
-// const MOVE_ITEM_REGEX = formRegex('[Number|||countMoved]<Item|||itemMoved>[Location|||origin]->[Location|||destination]');
+// These do not work on composite actions! Please first decompose actions like (t1+t2)->5 into simple actions with the actionSplitter
+const COMBAT_REGEX = formRegex('[Faction|||attacker]X<Faction|||defender><Clearing|||battleClearing>[<Suit|||defenderAmbush>@[<Suit|||attackerAmbush>@]][(<Roll|||attackerRoll>,<Roll|||defenderRoll>)]');
 const REVEAL_REGEX = formRegex('[Number|||countRevealed][Card|||cardRevealed][Faction|||revealingFaction]^[Faction|||revealedFaction]');
 const SCORE_VP_REGEX = formRegex('[Faction|||scoringFaction]++[Number|||points]');
 const REDUCE_VP_REGEX = formRegex('[Faction|||scoringFaction]--[Number|||points]');
 const CRAFT_REGEX = formRegex('Z<Craftable|||crafted>');
-const REMOVE_FACTION_MARKER_REGEX = formRegex('++-><FactionBoard|||targetFaction>');
+const REMOVE_FACTION_MARKER_REGEX = formRegex('++-><FactionBoard|||targetFactionBoard>');
 const CLEAR_MOUNTAIN_PATH_REGEX = formRegex('<Clearing|||lowerClearing>_<Clearing|||upperClearing>->');
 
-const GROUPING_REGEX = new RegExp(`\\((.+)\\)(.+)`);
-const COMBAT_REGEX = new RegExp(`^([${ALL_FACTIONS}])?X([${ALL_FACTIONS}])([0-9]{1,2})`);
+const UPDATE_RELATIONSHIP_REGEX = formRegex('[Faction|||vagabondFaction]$_<Faction|||relationshipFaction>-><Relationship|||updatedRelationship>')
+const UPDATE_FUNDS_REGEX = formRegex('$_f-><Number|||fundsRemaining>');
+const EXPOSE_PLOT_REGEX = formRegex('?P<Piece|||plotGuessed><Clearing|||plotClearing>');
+const FLIP_RAID_PLOT_REGEX = formRegex('Pt<Clearing|||plotClearing>^t_r');
+const PRICE_OF_FAILURE_REGEX = formRegex('#<Minister|||lostMinister>D$->');
 
-const MOVE_ITEM_REGEX = new RegExp(`^%([${ALL_ITEMS}]{1,2})?([${ALL_FACTIONS}])?\\$?([${ALL_ITEM_STATE}])?->([${ALL_ITEM_STATE}])?([${ALL_FACTIONS}])?\\$?`);
+export const MOVE_REGEX = formRegex('[Number|||countMoved]<Component|||componentMoved>[Location|||origin]->[Location|||destination]');
+
+// Allows movement to/from faction-specific locations: Item locations + Quests, The Burrow, as well as generic locations
+const EXTENDED_MOVE_REGEX = formRegex('[Number|||countMoved]<Component|||componentMoved>[ExtendedLocation|||origin]->[ExtendedLocation|||destination]');
+
+// TODO: Cleanup, or else find a way to implement with value in the future
+// function getDefaultOrigin(component: Piece | Card | Item, movingFaction: Faction): Location {
+//   if (Object.keys(Piece).find(key => Piece[key] === component)) {
+//     if (component === 'p') {
+//       // default pawn origin is its current location
+//       return null;  // TODO: Fix
+//     }
+//     // default non-pawn piece origin is the supply
+//     return { faction: movingFaction } as Location;
+//   } else if (Object.keys(Card).find(key => Piece[key] === component)) {
+//     // default card origin is
+//     return { faction: movingFaction } as Location;
+//   }
+// }
 
 // parse a VP action, defaults to +1
-// TODO: include faction
-function parseVP(action: string): ActionGainVP {
-  const count = action.split('++')[1] || '1';
-  return { vp: +count };
+function parseVP(action: string, currentFaction: Faction): ActionGainVP {
+  const result = action.match(SCORE_VP_REGEX);
+
+  return {
+    faction: (result.groups.scoringFaction as Faction) || currentFaction,
+    vp: +result.groups.points || 1
+  };
+}
+
+// parse a VP reduction action, defaults to -1
+function parseLoseVP(action: string, currentFaction: Faction): ActionGainVP {
+  const result = action.match(REDUCE_VP_REGEX);
+
+  return {
+    faction: (result.groups.scoringFaction as Faction) || currentFaction,
+    vp: -result.groups.points || -1
+  };
 }
 
 // parse a dominance action
-// TODO: parse dom
-function parseDominance(action: string): ActionDominance {
-  return { target: Faction.Marquise };
+function parseDominance(action: string, takingFaction: Faction): ActionDominance {
+  const result = action.match(REMOVE_FACTION_MARKER_REGEX);
+
+  return { target: result.groups.targetFactionBoard ? result.groups.targetFactionBoard[0] as Faction : takingFaction };
 }
 
 // parse a craft card or item
 function parseCraft(action: string): ActionCraft {
-  const craft = action.split('Z')[1];
+  const result = action.match(CRAFT_REGEX);
 
   // craft an item
-  if(craft[0] === '%') {
-    return { craftItem: craft[1] as Item };
+  if(result.groups.crafted[0] === '%') {
+    return { craftItem: result.groups.crafted as Item };
   }
 
   // craft a card
-  return { craftCard: craft[0] as Card };
+  return { craftCard: result.groups.crafted as Card };
 }
 
 // parse a combat action
 function parseCombat(action: string, takingFaction: Faction): ActionCombat {
-  const [_, taker, target, clearing] = action.match(COMBAT_REGEX);
-  return {
-    attacker: (taker || takingFaction) as Faction,
-    defender: target as Faction,
-    clearing: +clearing
-  };
+  const result = action.match(COMBAT_REGEX);
+  const parsedAction: ActionCombat = {
+    attacker: (result.groups.attacker || takingFaction) as Faction,
+    defender: result.groups.defender as Faction,
+    clearing: +result.groups.battleClearing
+  }
+  if (result.groups.defenderAmbush != null) {
+    parsedAction.ambush = result.groups.defenderAmbush as Suit;
+  }
+  if (result.groups.attackerAmbush != null) {
+    parsedAction.ambush = result.groups.attackerAmbush as Suit;
+  }
+  
+  return parsedAction;
 }
 
 // parse a move action
-function parseMove(action: string, takingFaction: Faction): ActionMove {
-  
-  const move = {
-    things: null,
-    start: null,
-    end: null
+export function parseMove(action: string, takingFaction: Faction): ActionMove {
+
+  const actions = splitAction(action);
+  const movingComponents = [];
+  let origin;
+  let destination;
+
+  for (let simpleAction of actions) {
+    const result = simpleAction.match(EXTENDED_MOVE_REGEX);
+    const number = +(result.groups.countMoved || 1);
+    const component = result.groups.componentMoved;
+    // TODO: This only works if all pieces in the action are going from the same origin to the same destination
+    // FIX THIS SO IT WORKS FOR, e.g., w->1+2+3
+    origin = origin || result.groups.origin;  // TODO: Add default: deck, current pawn location, supply, or current faction board
+    destination = destination || result.groups.destination;  // TODO: Add default: discard pile, supply, or removed from game
+
+    for (let i = 0; i < number; i++) {
+      movingComponents.push(component);
+    }
+  }
+
+  return {
+    things: movingComponents,
+    start: origin,
+    end: destination
   };
 
-  return move;
-
-}
-
-function parseMoveItem(action: string, takingFaction: Faction): ActionMove {
-
-  console.log(action.match(MOVE_ITEM_REGEX));
-
-  return null;
 }
 
 function parseCard(card: string): Card {
@@ -103,97 +141,202 @@ function parseCard(card: string): Card {
 
 // parse a reveal action
 export function parseReveal(action: string, takingFaction: Faction): ActionReveal {
-  
-  const [leftSide, rightSide] = action.split('^', 2);
 
-  const targets = rightSide.includes('+')
-    ? rightSide.split('+').map(s => s || null)
-    : [rightSide || null];
+  const actions = splitAction(action);
+  const subjectsRevealed = [];
+  const targets = [];
 
-  function parseLeftSideOfReveal(leftSide: string): any {
-    const twoDigitNumberRegex = /^([0-9]{1,2}).*/;
-    const number = twoDigitNumberRegex.test(leftSide)
-      ? leftSide.match(twoDigitNumberRegex)[1]
-      : null;
-    
-    const revealer = ALL_FACTIONS.split('').some(faction => leftSide.endsWith(faction))
-      ? leftSide[leftSide.length - 1] as Faction
-      : null;
+  for (let simpleAction of actions) {
+    if (!REVEAL_REGEX.test(simpleAction)) {
+      return;
+    }
+    const result = simpleAction.match(REVEAL_REGEX);
+    const subject = {
+      number: result.groups.cardRevealed ? +(result.groups.countRevealed || 1) : null,
+      card: result.groups.cardRevealed ? parseCard(result.groups.cardRevealed) : null,
+      revealer: (result.groups.revealingFaction || takingFaction) as Faction
+    };
 
-    const card = leftSide.substring(
-      number ? number.toString().length : 0,
-      leftSide.length - (revealer ? revealer.length : 0)
-    );
+    subjectsRevealed.push(subject);
+    targets.push(result.groups.revealedFaction || null);
+  }
+
+  return {
+    subjects: subjectsRevealed,
+    targets: targets
+  };
+
+}
+
+// parse a clear mountain path action
+export function parseClearMountainPath(action: string): ActionClearPath {
+
+  const result = action.match(CLEAR_MOUNTAIN_PATH_REGEX);
+
+  return {
+    clearings: [+result.groups.lowerClearing, +result.groups.upperClearing]
+  };
+
+}
+
+export function parseUpdateRelationshipAction(action: string, takingFaction: Faction): ActionMove {
+
+  if (UPDATE_RELATIONSHIP_REGEX.test(action)) {
+    const result = action.match(UPDATE_RELATIONSHIP_REGEX);
+    const vagabondFaction = result.groups.vagabondFaction || takingFaction;
+    const relationshipFaction = result.groups.relationshipFaction;
+    const relationshipLevel = result.groups.updatedRelationship;
 
     return {
-      number: card ? (+number || 1) : null,
-      card: card ? parseCard(card) : null,
-      revealer: revealer || takingFaction
+      things: [relationshipFaction as Card],  // TODO: Fix the 'as Card' duct tape
+      start: vagabondFaction,
+      end: relationshipLevel
     };
   }
 
-  const subjects = (function () {
-    if (GROUPING_REGEX.test(leftSide)) {
-      const [_, grouped, outerTerm] = leftSide.match(GROUPING_REGEX);
-      return grouped.split('+').map(g => parseLeftSideOfReveal(g + outerTerm));
-    } else if (leftSide.includes('+')) {
-      return leftSide.split('+').map(g => parseLeftSideOfReveal(g));
-    } else {
-      return [parseLeftSideOfReveal(leftSide)];
-    }
-  }());
+}
 
-  return {
-    subjects: subjects as SubjectReveal[],
-    targets: targets as Faction[]
-  };
+export function parseUpdateFundsAction(action: string): ActionUpdateFunds {
+
+  if (UPDATE_FUNDS_REGEX.test(action)) {
+    const result = action.match(UPDATE_FUNDS_REGEX);
+
+    return {
+      funds: +result.groups.fundsRemaining
+    };
+  }
+
+}
+
+export function parsePriceOfFailureAction(action: string): ActionMove {
+
+  if (PRICE_OF_FAILURE_REGEX.test(action)) {
+    const result = action.match(PRICE_OF_FAILURE_REGEX);
+
+    return {
+      things: [result.groups.lostMinister as Card],
+      start: Faction.Duchy,
+      end: null
+    };
+  }
+
+  return null;
+
+}
+
+export function parsePlotAction(action: string): ActionTriggerPlot {
+
+  if (EXPOSE_PLOT_REGEX.test(action)) {
+    const result = action.match(EXPOSE_PLOT_REGEX);
+
+    return {
+      plot: result.groups.plotGuessed,
+      clearing: +result.groups.plotClearing
+    };
+  }
+
+  if (FLIP_RAID_PLOT_REGEX.test(action)) {
+    const result = action.match(FLIP_RAID_PLOT_REGEX);
+
+    return {
+      plot: 't_r',
+      clearing: +result.groups.plotClearing
+    };
+  }
+
+  return null;
+
 }
 
 // parse out an action 
 export function parseAction(action: string, faction: Faction): Action {
 
+  let parsedAction;
+
+  // Check faction-specific actions first, in case they have to handle special movement rules (such as Vagabond/Duchy)
+  switch(faction) {
+    case 'C':
+      parsedAction = parseMarquiseAction(action);
+      break;
+    case 'E':
+      parsedAction = parseEyrieAction(action);
+      break;
+    case 'A':
+      parsedAction = parseWoodlandAction(action);
+      break;
+    case 'V':
+    case 'G':
+      parsedAction = parseVagabondAction(action, faction);  // Vagabond gets the faction as an argument too, to distinguish V/G
+      break;
+    case 'L':
+      parsedAction = parseCultAction(action);
+      break;
+    case 'O':
+      parsedAction = parseRiverfolkAction(action);
+      break;
+    case 'D':
+      parsedAction = parseDuchyAction(action);
+      break;
+    case 'P':
+      parsedAction = parseConspiracyAction(action);
+      break;
+    default:
+      break;
+  }
+
+  if (parsedAction != null) {
+    return parsedAction;
+  }
+
   if(action.includes('++') && !action.includes('->')) {
-    return parseVP(action);
+    return parseVP(action, faction);
+  }
+
+  if(action.includes('--')) {
+    return parseLoseVP(action, faction);
   }
 
   if(action.includes('++') && action.includes('->')) {
-    return parseDominance(action);
+    return parseDominance(action, faction);
   }
 
   if(action.startsWith('Z')) {
     return parseCraft(action);
   }
 
-  if(action.includes('->')) {
-    return parseMove(action, faction);
-  }
-
   if(COMBAT_REGEX.test(action)) {
     return parseCombat(action, faction);
   }
 
-  if(action.includes('^') && !Object.values(CorvidSpecial).some(corvidPlot => action.endsWith(corvidPlot))) {
+  if(action.includes('^')) {
     return parseReveal(action, faction);
   }
 
-  if(MOVE_ITEM_REGEX.test(action)) {
-    return parseMoveItem(action, faction);
+  if(CLEAR_MOUNTAIN_PATH_REGEX.test(action)) {
+    return parseClearMountainPath(action);
   }
 
-  switch(faction) {
-    case 'C': return parseMarquiseAction(action);
-    case 'E': return parseEyrieAction(action);
-    case 'A': return parseWoodlandAction(action);
-    case 'V': return parseVagabondAction(action);
-    case 'G': return parseVagabondAction(action);
-    case 'L': return parseCultAction(action);
-    case 'O': return parseRiverfolkAction(action);
-    case 'D': return parseDuchyAction(action);
-    case 'P': return parseConspiracyAction(action);
-    default: {
-      console.error(`Could not parse action: "${action}" (${faction}) - no handlers for this.`);
-      // throw new Error(`Could not parse action: "${action}" - no handlers for this.`);
-    }
+  if(UPDATE_RELATIONSHIP_REGEX.test(action)) {
+    return parseUpdateRelationshipAction(action, faction);
   }
+
+  if(UPDATE_FUNDS_REGEX.test(action)) {
+    return parseUpdateFundsAction(action);
+  }
+
+  if(PRICE_OF_FAILURE_REGEX.test(action)) {
+    return parsePriceOfFailureAction(action);
+  }
+
+  if(EXPOSE_PLOT_REGEX.test(action) || FLIP_RAID_PLOT_REGEX.test(action)) {
+    return parsePlotAction(action);
+  }
+
+  if(action.includes('->')) {
+    return parseMove(action, faction);
+  }
+
+  console.error(`Could not parse action: "${action}" (${faction}) - no handlers for this.`);
+      // throw new Error(`Could not parse action: "${action}" - no handlers for this.`);
 
 }

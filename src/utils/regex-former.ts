@@ -1,4 +1,4 @@
-import { CardName, Faction, Item, ItemState, Piece, Suit } from '../interfaces';
+import { CardName, DuchyMinisterSpecial, EyrieLeaderSpecial, EyrieSpecial, Faction, Item, ItemState, LizardOutcastSpecial, Piece, QuestCard, RiverfolkPriceSpecial, SpecialCardName, Suit, VagabondCharacterSpecial, VagabondItemSpecial, VagabondRelationshipStatus } from '../interfaces';
 
 const DIVIDER_BEFORE_GROUP_NAME = '|||';  // arbitrarily chosen to be a divider that will never appear in Rootlog code
 
@@ -14,8 +14,8 @@ const FOREST = `(${CLEARING}(_${CLEARING}){2,})`;                     // 3+ adja
 const FACTION_BOARD = `(${ALL_FACTIONS}?\\$)`;                        // $, optionally preceeded by a faction
 const HAND = `(${ALL_FACTIONS})`;                                     // A faction
 
-// In order from most-to-least specific
-const ALL_LOCATIONS = `(${FOREST}|${CLEARING}|${FACTION_BOARD}|${HAND}|${ALL_ITEM_STATE})`;
+// In order from most-to-least specific, including the discard pile represented by *
+const ALL_LOCATIONS = `(${FOREST}|${CLEARING}|${FACTION_BOARD}|${HAND}|${ALL_ITEM_STATE}|\\*)`;
 
 // [Faction]<PieceType>[_<subtype>],  subtype must be one letter
 const PIECE_REGEX_STRING = `(${ALL_FACTIONS})?(${ALL_PIECE_TYPES})(_[a-z])?`;
@@ -25,6 +25,26 @@ const CARD_REGEX_STRING = `(${ALL_SUITS})?#${ALL_CARD_NAMES}?`;
 const ITEM_REGEX_STRING = `(%${ALL_ITEM_TYPES}|%_)`;
 // a card, piece, or item
 const COMPONENT_REGEX_STRING = `(${CARD_REGEX_STRING}|${PIECE_REGEX_STRING}|${ITEM_REGEX_STRING})`;
+
+// Faction-specific Regex elements
+// Eyrie Dynasties
+const EYRIE_COLUMNS = `(${Object.values(EyrieSpecial).map(col => `\\$_${col}`).join('|')})`;    // ($_r|$_m|$_x|$_b)
+const EYRIE_LEADERS = `(${Object.values(EyrieLeaderSpecial).join('|')})`;
+// Vagabond
+const VAGABOND_RELATIONSHIP_STATUS = `(${Object.values(VagabondRelationshipStatus).join('|')})`;
+const QUEST_LOCATION = `(${Object.values(QuestCard).join('|')}|Q)`;
+const ITEM_LOCATION = `(${Object.values(VagabondItemSpecial).join('|')}${ALL_ITEM_STATE}?)`;
+const VAGABOND_SPECIFIC_LOCATIONS = `(${QUEST_LOCATION}|${ITEM_LOCATION})`;
+const VAGABOND_CHARACTERS = `(${Object.values(VagabondCharacterSpecial).join('|')})`;
+// Riverfolk Company
+const RIVERFOLK_SERVICES = `(${Object.values(RiverfolkPriceSpecial).join('|')})`;
+// Lizard Cult
+const LIZARD_OUTCAST_DEGREES = `(${Object.values(LizardOutcastSpecial).join('|')})`
+// Underground Duchy
+const DUCHY_SPECIFIC_LOCATIONS = `(0)`;  // The Burrow
+const DUCHY_MINISTERS = `(${Object.values(DuchyMinisterSpecial).join('|')})`;
+
+const EXTENDED_LOCATIONS = `(${VAGABOND_SPECIFIC_LOCATIONS}|${DUCHY_SPECIFIC_LOCATIONS}|${ALL_LOCATIONS})`;
 
 // base should be of the format 'code|||name' or else just 'code'
 // ex: 'number|||amountOfPoints',  'piece'
@@ -56,6 +76,25 @@ const parseForRegexString = function(str: string): string {
       return _parseForRegexString(ALL_FACTIONS, groupName);
     case ('roll'):
       return _parseForRegexString(`[0-3]`, groupName);
+    // Faction-specific codes
+    case ('decree'):
+      return _parseForRegexString(EYRIE_COLUMNS, groupName);
+    case ('leader'):
+      return _parseForRegexString(EYRIE_LEADERS, groupName);
+    case ('relationship'):
+      return _parseForRegexString(VAGABOND_RELATIONSHIP_STATUS, groupName);
+    case ('character'):
+      return _parseForRegexString(VAGABOND_CHARACTERS, groupName);
+    case ('pricetype'):
+      return _parseForRegexString(RIVERFOLK_SERVICES, groupName);
+    case ('price'):
+      return _parseForRegexString(`[1-4]`, groupName);
+    case ('outcast'):
+      return _parseForRegexString(LIZARD_OUTCAST_DEGREES, groupName);
+    case ('extendedlocation'):
+      return _parseForRegexString(EXTENDED_LOCATIONS, groupName);
+    case ('minister'):
+      return _parseForRegexString(DUCHY_MINISTERS, groupName);
     default:
       return _parseForRegexString(groupCode, groupName);
     }
@@ -84,7 +123,7 @@ export function formRegex(pseudoRegex: string): RegExp {
 
   [lhs, rhs].forEach((splitString, matchIdx) => {
     if (splitString == null) {
-      return;  // TODO: Test? This seems wrong...
+      return;
     }
 
     let parsedRegexString = '';
@@ -162,6 +201,7 @@ export function formRegex(pseudoRegex: string): RegExp {
         case ")":
         case "+":
         case "?":
+        case "$":
         case "^":
           currentString += `\\${c}`;
           break;

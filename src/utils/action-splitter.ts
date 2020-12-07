@@ -31,12 +31,15 @@ export function splitAction(action: string): string[] {
     // The action contains a '+' but no text enclosed in parentheses
     // This means this is grouping movement or revealing
     const match = action.match(/(?<lhs>.*[^<])(?<delim>->|\^)(?<rhs>.*)/);
-    let [lhs, rhs, delim] = (match == null) ? [action, '', ''] : [match.groups.lhs, match.groups.rhs, match.groups.delim];
-  
-    if (lhs.includes('+')) {
-      return lhs.split('+').map(component => `${component}${delim}${rhs}`);
-    } else {
-      return rhs.split('+').map(component => `${lhs}${delim}${component}`);
+    const [lhs, rhs, delim] = (match == null) ? [action, '', ''] : [match.groups.lhs || '', match.groups.rhs || '', match.groups.delim || ''];
+
+    const splitActions = [];
+    for (let leftComponent of lhs.split('+')) {
+        for (let rightComponent of rhs.split('+')) {
+            splitActions.push(`${leftComponent}${delim}${rightComponent}`);
+        }
     }
+
+    return splitActions;
   }
 }

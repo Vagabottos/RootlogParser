@@ -283,3 +283,62 @@ test('Correctly forms regex for moving items', t => {
   t.is(result.groups.destination, undefined);
 
 });
+
+test('Correctly forms regex for battles', t => {
+
+  const moveRegex = formRegex('[Faction|||attacker]X<Faction|||defender><Clearing|||battleClearing>[<Suit|||defenderAmbush>@[<Suit|||attackerAmbush>@]][(<Roll|||attackerRoll>,<Roll|||defenderRoll>)]');
+  let result = 'CXA7'.match(moveRegex);
+  t.is(result.groups.attacker, 'C');
+  t.is(result.groups.defender, 'A');
+  t.is(result.groups.battleClearing, '7');
+  t.is(result.groups.defenderAmbush, undefined);
+  t.is(result.groups.attackerAmbush, undefined);
+  t.is(result.groups.attackerRoll, undefined);
+  t.is(result.groups.defenderRoll, undefined);
+
+  result = 'XA7'.match(moveRegex);
+  t.is(result.groups.attacker, undefined);
+  t.is(result.groups.defender, 'A');
+  t.is(result.groups.battleClearing, '7');
+  t.is(result.groups.defenderAmbush, undefined);
+  t.is(result.groups.attackerAmbush, undefined);
+  t.is(result.groups.attackerRoll, undefined);
+  t.is(result.groups.defenderRoll, undefined);
+  
+  result = 'CXA7B@'.match(moveRegex);
+  t.is(result.groups.attacker, 'C');
+  t.is(result.groups.defender, 'A');
+  t.is(result.groups.battleClearing, '7');
+  t.is(result.groups.defenderAmbush, 'B');
+  t.is(result.groups.attackerAmbush, undefined);
+  t.is(result.groups.attackerRoll, undefined);
+  t.is(result.groups.defenderRoll, undefined);
+
+  result = 'CXA7B@R@'.match(moveRegex);
+  t.is(result.groups.attacker, 'C');
+  t.is(result.groups.defender, 'A');
+  t.is(result.groups.battleClearing, '7');
+  t.is(result.groups.defenderAmbush, 'B');
+  t.is(result.groups.attackerAmbush, 'R');
+  t.is(result.groups.attackerRoll, undefined);
+  t.is(result.groups.defenderRoll, undefined);
+
+  result = 'CXA7B@R@(1,3)'.match(moveRegex);
+  t.is(result.groups.attacker, 'C');
+  t.is(result.groups.defender, 'A');
+  t.is(result.groups.battleClearing, '7');
+  t.is(result.groups.defenderAmbush, 'B');
+  t.is(result.groups.attackerAmbush, 'R');
+  t.is(result.groups.attackerRoll, '1');
+  t.is(result.groups.defenderRoll, '3');
+
+  result = 'XA7(1,3)'.match(moveRegex);
+  t.is(result.groups.attacker, undefined);
+  t.is(result.groups.defender, 'A');
+  t.is(result.groups.battleClearing, '7');
+  t.is(result.groups.defenderAmbush, undefined);
+  t.is(result.groups.attackerAmbush, undefined);
+  t.is(result.groups.attackerRoll, '1');
+  t.is(result.groups.defenderRoll, '3');
+
+});
