@@ -5,7 +5,7 @@ const DIVIDER_BEFORE_GROUP_NAME = '|||';  // arbitrarily chosen to be a divider 
 const ALL_FACTIONS = `[${Object.values(Faction).join('')}]`;          // [CEAVGLODP]
 const ALL_SUITS = `[${Object.values(Suit).join('')}]`;                // [BFMR]
 const ALL_ITEM_TYPES = `[${Object.values(Item).join('')}]`;           // [sbcxhtrf]
-const ALL_PIECE_TYPES = `[${Object.values(Piece).join('')}]`;         // [wpbtr]
+const ALL_PIECE_TYPES = `[${Object.values(PieceType).join('')}]`;         // [wpbtr]
 const ALL_ITEM_STATE = `[${Object.values(ItemState).join('')}]`;      // [re]
 const ALL_CARD_NAMES = `(${Object.values(CardName).join('|')})`;      // (@|dom|armor|bank|...|tun)
 

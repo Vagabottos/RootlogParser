@@ -23,7 +23,12 @@ export enum Faction {
   Corvid = 'P'
 }
 
-export enum Piece {
+export interface Piece {
+  faction: Faction;
+  pieceType: PieceType
+}
+
+export enum PieceType {
   Warrior = 'w',
   Pawn = 'p',
   Building = 'b',

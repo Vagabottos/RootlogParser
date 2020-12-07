@@ -4,8 +4,6 @@ import { splitAction } from './utils/action-splitter';
 import { formRegex } from './utils/regex-former';
 
 // These do not work on composite actions! Please first decompose actions like (t1+t2)->5 into simple actions with the actionSplitter
-const COMBAT_REGEX = formRegex('[Faction|||attacker]X<Faction|||defender><Clearing|||battleClearing>[<Suit|||defenderAmbush>@[<Suit|||attackerAmbush>@]][(<Roll|||attackerRoll>,<Roll|||defenderRoll>)]');
-const REVEAL_REGEX = formRegex('[Number|||countRevealed][Card|||cardRevealed][Faction|||revealingFaction]^[Faction|||revealedFaction]');
 const SCORE_VP_REGEX = formRegex('[Faction|||scoringFaction]++[Number|||points]');
 const REDUCE_VP_REGEX = formRegex('[Faction|||scoringFaction]--[Number|||points]');
 const CRAFT_REGEX = formRegex('Z<Craftable|||crafted>');
@@ -139,6 +137,17 @@ function parseCard(card: string): Card {
     };
 }
 
+function parseCombineAndGroup(side: string): string[] {
+  if (GROUPING_REGEX.test(side)) {
+    const [_, grouped, outerTerm] = side.match(GROUPING_REGEX);
+    return grouped.split('+').map(g => g + outerTerm);
+  } else if (side.includes('+')) {
+    return side.split('+');
+  } else {
+    return [side || null];
+  }
+}
+
 // parse a reveal action
 export function parseReveal(action: string, takingFaction: Faction): ActionReveal {
 
@@ -249,7 +258,7 @@ export function parsePlotAction(action: string): ActionTriggerPlot {
 }
 
 // parse out an action 
-export function parseAction(action: string, faction: Faction): Action {
+export function parseAction(action: string, faction: Faction): any {
 
   let parsedAction;
 
@@ -304,6 +313,16 @@ export function parseAction(action: string, faction: Faction): Action {
     return parseCraft(action);
   }
 
+  if(action.includes('->')) {
+    if (action.includes('<->')) {
+      // TODO: Parse Corvid Trick action.
+    } else if (action.startsWith('$_')) {
+      // TODO: Parse special faction board actions.
+    } else {
+      return parseMove(action, faction);
+    }
+  }
+
   if(COMBAT_REGEX.test(action)) {
     return parseCombat(action, faction);
   }
@@ -314,6 +333,11 @@ export function parseAction(action: string, faction: Faction): Action {
 
   if(CLEAR_MOUNTAIN_PATH_REGEX.test(action)) {
     return parseClearMountainPath(action);
+    if (!Object.values(CorvidSpecial).some(corvidPlot => action.endsWith(corvidPlot))) {
+      return parseReveal(action, faction);
+    } else {
+      // TODO: Parse Corvid reveal plot
+    }
   }
 
   if(UPDATE_RELATIONSHIP_REGEX.test(action)) {
