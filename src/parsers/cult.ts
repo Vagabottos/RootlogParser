@@ -1,6 +1,19 @@
-import { Action } from '../interfaces';
+import { Action, Suit } from '../interfaces';
+import { formRegex } from '../utils/regex-former';
+
+const SET_OUTCAST_REGEX = formRegex('$_<Outcast|||outcastDegree>-><Suit|||outcastSuit>');
 
 export function parseCultAction(action: string): Action {
-  console.error(`Could not parse Cult action: "${action}" - no handlers for this.`);
+
+  if (SET_OUTCAST_REGEX.test(action)) {
+    const result = action.match(SET_OUTCAST_REGEX);
+
+    return {
+      degree: result.groups.outcastDegree,
+      suit: result.groups.outcastSuit as Suit
+    };
+  }
+
   return null;
+
 }

@@ -6,19 +6,19 @@ function cleanText(str: string = ''): string {
   return str.trim();
 }
 
-// winner line format: Winner: <text>
+// map line format: Map: <text>
 export function parseMap(line: string): Map {
   return cleanText(line.split('Map:')[1]) as Map;
 }
 
-// winner line format: Winner: <text>
+// deck line format: Deck: <text>
 export function parseDeck(line: string): Deck {
   return cleanText(line.split('Deck:')[1]) as Deck;
 }
 
-// winner line format: Winner: <text>
-export function parseWinner(line: string): string {
-  return cleanText(line.split('Winner:')[1]);
+// winner line format: Winner: <factions...>
+export function parseWinner(line: string): Faction[] {
+  return cleanText(line.split('Winner:')[1]).split('') as Faction[];
 }
 
 // pool line format: Pool: <factions...>
