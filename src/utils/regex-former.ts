@@ -1,11 +1,11 @@
-import { CardName, DuchyMinisterSpecial, EyrieLeaderSpecial, EyrieSpecial, Faction, Item, ItemState, LizardOutcastSpecial, Piece, QuestCard, RiverfolkPriceSpecial, SpecialCardName, Suit, VagabondCharacterSpecial, VagabondItemSpecial, VagabondRelationshipStatus } from '../interfaces';
+import { CardName, DuchyMinisterSpecial, EyrieLeaderSpecial, EyrieSpecial, Faction, Item, ItemState, LizardOutcastSpecial, PieceType, QuestCard, RiverfolkPriceSpecial, SpecialCardName, Suit, VagabondCharacterSpecial, VagabondItemSpecial, VagabondRelationshipStatus } from '../interfaces';
 
 const DIVIDER_BEFORE_GROUP_NAME = '|||';  // arbitrarily chosen to be a divider that will never appear in Rootlog code
 
 const ALL_FACTIONS = `[${Object.values(Faction).join('')}]`;          // [CEAVGLODP]
 const ALL_SUITS = `[${Object.values(Suit).join('')}]`;                // [BFMR]
 const ALL_ITEM_TYPES = `[${Object.values(Item).join('')}]`;           // [sbcxhtrf]
-const ALL_PIECE_TYPES = `[${Object.values(Piece).join('')}]`;         // [wpbtr]
+const ALL_PIECE_TYPES = `[${Object.values(PieceType).join('')}]`;     // [wpbtr]
 const ALL_ITEM_STATE = `[${Object.values(ItemState).join('')}]`;      // [re]
 const ALL_CARD_NAMES = `(${Object.values(CardName).join('|')})`;      // (@|dom|armor|bank|...|tun)
 
@@ -45,6 +45,8 @@ const DUCHY_SPECIFIC_LOCATIONS = `(0)`;  // The Burrow
 const DUCHY_MINISTERS = `(${Object.values(DuchyMinisterSpecial).join('|')})`;
 
 const EXTENDED_LOCATIONS = `(${VAGABOND_SPECIFIC_LOCATIONS}|${DUCHY_SPECIFIC_LOCATIONS}|${ALL_LOCATIONS})`;
+// includes faction-specific card names
+const EXTENDED_COMPONENTS = `(${EYRIE_LEADERS}|${VAGABOND_CHARACTERS}|${DUCHY_MINISTERS}|${COMPONENT_REGEX_STRING})`;
 
 // base should be of the format 'code|||name' or else just 'code'
 // ex: 'number|||amountOfPoints',  'piece'
@@ -91,10 +93,12 @@ const parseForRegexString = function(str: string): string {
       return _parseForRegexString(`[1-4]`, groupName);
     case ('outcast'):
       return _parseForRegexString(LIZARD_OUTCAST_DEGREES, groupName);
-    case ('extendedlocation'):
-      return _parseForRegexString(EXTENDED_LOCATIONS, groupName);
     case ('minister'):
       return _parseForRegexString(DUCHY_MINISTERS, groupName);
+    case ('extendedlocation'):
+      return _parseForRegexString(EXTENDED_LOCATIONS, groupName);
+    case ('extendedcomponent'):
+      return _parseForRegexString(EXTENDED_COMPONENTS, groupName);
     default:
       return _parseForRegexString(groupCode, groupName);
     }

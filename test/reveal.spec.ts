@@ -18,6 +18,21 @@ test('Reveal action is parsed correctly when left side is combined and grouped',
   t.is(result.targets[0], 'P');
 });
 
+test('Reveal action is parsed correctly when left side is combined and grouped', t => {
+
+  const result = parseReveal('2R#D+F#D^A', 'C' as Faction);
+
+  t.is(result.subjects[0].number, 2);
+  t.is(result.subjects[0].card.suit, 'R');
+  t.is(result.subjects[0].revealer, 'D');
+
+  t.is(result.subjects[1].number, 1);
+  t.is(result.subjects[1].card.suit, 'F');
+  t.is(result.subjects[1].revealer, 'D');
+
+  t.is(result.targets[0], 'A');
+});
+
 test('Reveal action is parsed correctly when right side is combined', t => {
 
   const result = parseReveal('R#^A+C', 'D' as Faction);
@@ -46,7 +61,7 @@ test('Reveal specific card to whole table', t => {
 
   t.is(result.subjects[0].number, 1);
   t.is(result.subjects[0].card.suit, 'R');
-  t.is(result.subjects[0].card.cardName, 'dom');
+  t.is(result.subjects[0].card.cardName, 'dominance');
   t.is(result.subjects[0].revealer, 'C');
 
   t.is(result.targets[0], null);

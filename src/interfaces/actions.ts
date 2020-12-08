@@ -1,4 +1,4 @@
-import { Card, Faction, Item, Piece, Suit } from './rootgame';
+import { Card, CardName, Faction, Item, Piece, RootLocation, Suit } from './rootgame';
 
 export type Action = ActionGainVP | ActionCraft | ActionMove | ActionDominance | ActionCombat | ActionReveal | ActionClearPath | ActionSetOutcast | ActionSetPrices | ActionUpdateFunds | ActionTriggerPlot | ActionSwapPlots;
 
@@ -9,7 +9,7 @@ export interface ActionGainVP {
 
 export interface ActionCraft {
   craftItem?: Item;
-  craftCard?: Card;
+  craftCard?: CardName;
 }
 
 export interface ActionCombat {
@@ -20,10 +20,15 @@ export interface ActionCombat {
   foilAmbush?: Suit;
 }
 
+export interface Thing {
+  number: number;
+  thing: Card | Item | Piece;
+  start: RootLocation;
+}
+
 export interface ActionMove {
-  things: Card[] | Item[] | Piece[];
-  start: number | string;
-  end: number | string;
+  things: Thing[];
+  destinations: RootLocation[];
 }
 
 export interface ActionDominance {

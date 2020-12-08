@@ -23,7 +23,12 @@ export enum Faction {
   Corvid = 'P'
 }
 
-export enum Piece {
+export interface Piece {
+  faction: Faction,
+  pieceType: PieceType
+}
+
+export enum PieceType {
   Warrior = 'w',
   Pawn = 'p',
   Building = 'b',
@@ -82,8 +87,8 @@ export enum VagabondItemSpecial {
 }
 
 export enum VagabondCharacterSpecial {
-  Arbiter = 'arbiter',
   Adventurer = 'adventurer',
+  Arbiter = 'arbiter',
   Harrier = 'harrier',
   Ranger = 'ranger',
   Ronin = 'ronin',
@@ -258,13 +263,16 @@ export enum QuestCard {
 export const SpecialCardName = Object.assign({}, EyrieLeaderSpecial, VagabondCharacterSpecial, DuchyMinisterSpecial);
 export type SpecialCardName = typeof SpecialCardName;
 
-// TODO: Might need this, unsure
-// export interface Location {
-//     index?: Number,                   // Clearing
-//     surroundingClearings?: Number[],  // Forest
-//     faction: Faction,                 // Supply or Hand
-//     // itemState
-// }
+export interface Forest {
+  clearings: number[]
+}
+
+export interface FactionBoard {
+  faction: Faction
+}
+
+// TODO: Add decree column, Vagabond board areas, quests
+export type RootLocation = ItemState | Faction | number | Forest | FactionBoard | VagabondRelationshipStatus;
 
 export interface Card {
     suit?: Suit,

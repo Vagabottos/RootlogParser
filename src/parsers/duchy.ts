@@ -1,4 +1,4 @@
-import { Action, Card, Faction } from '../interfaces';
+import { Action, Faction, Thing } from '../interfaces';
 import { formRegex } from '../utils/regex-former';
 
 const SWAY_MINISTER_REGEX = formRegex('#<Minister|||swayedMinister>->$');
@@ -9,9 +9,12 @@ export function parseDuchyAction(action: string): Action {
     const result = action.match(SWAY_MINISTER_REGEX);
 
     return {
-      things: [result.groups.swayedMinister as Card],
-      start: null,
-      end: Faction.Duchy
+      things: [{
+        number: 1,
+        thing: { cardName: result.groups.swayedMinister },
+        start: null
+      } as Thing],
+      destinations: [Faction.Duchy]
     };
   }
 
