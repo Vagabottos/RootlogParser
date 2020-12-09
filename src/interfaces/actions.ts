@@ -3,7 +3,6 @@ import { Card, CardName, Faction, Item, Piece, RootLocation, Suit } from './root
 export type Action = ActionGainVP | ActionCraft | ActionMove | ActionDominance | ActionCombat | ActionReveal | ActionClearPath | ActionSetOutcast | ActionSetPrices | ActionUpdateFunds | ActionTriggerPlot | ActionSwapPlots;
 
 export interface ActionGainVP {
-  faction: Faction;
   vp: number;
   faction: Faction;
 }

@@ -1,4 +1,5 @@
-import { Action, ActionMove, Card, Faction } from '../interfaces';
+import { parseCard } from '../action-parser';
+import { Action, ActionMove, Faction } from '../interfaces';
 import { splitAction } from '../utils/action-splitter';
 import { formRegex } from '../utils/regex-former';
 
@@ -7,26 +8,27 @@ const CHOOSE_LEADER_REGEX = formRegex('#<Leader|||chosenLeader>->$');
 const ADD_TO_DECREE_REGEX = formRegex('[Number|||countAdded]<Card|||cardAdded>E-><Decree|||columnAdded>')
 
 
-function parseAddToDecree(actions: string[]): ActionMove {
+export function parseAddToDecree(actions: string[]): ActionMove {
 
   const movingComponents = [];
-  let destination;
+  const destinations = [];
 
   for (let action of actions) {
     const result = action.match(ADD_TO_DECREE_REGEX);
-    const number = result.groups.countAdded || 1;
-    const component = result.groups.cardAdded;
-    destination = destination || result.groups.destination;
+    const component = {
+      number: +(result.groups.countAdded || 1),
+      thing: parseCard(result.groups.cardAdded),
+      start: Faction.Eyrie  // TODO: Faction Board, not faction
+    };
+    const destination = null;  // TODO: Destination is decree - add that as a location
 
-    for (let i = 0; i < number; i++) {
-      movingComponents.push(component);
-    }
+    movingComponents.push(component);
+    destinations.push(destination);
   }
 
   return {
     things: movingComponents,
-    start: null,
-    end: destination
+    destinations: destinations
   };
 
 }
@@ -37,17 +39,19 @@ export function parseEyrieAction(action: string): Action {
     const result = action.match(CHOOSE_LEADER_REGEX);
 
     return {
-      things: [result.groups.chosenLeader as Card],
-      start: null,
-      end: Faction.Eyrie
+      things: [{
+        number: 1,
+        thing: { cardName: result.groups.chosenLeader },
+        start: null  // TODO: Genuinely null? No idea if this should be set to anything else
+      }],
+      destinations: [Faction.Eyrie]  // TODO: Faction Board, not faction
     };
   }
 
   if (PURGE_DECREE_REGEX.test(action)) {
     return {
-      things: [],  // TODO: All cards currently in Decree
-      start: null, // TODO: Decree (column by column?)
-      end: null    // TODO: Discard pile
+      things: [],         // TODO: All cards currently in Decree
+      destinations: []    // TODO: Discard pile - add this as a location!
     };
   }
 

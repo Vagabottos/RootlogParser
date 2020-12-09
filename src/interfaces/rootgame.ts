@@ -24,7 +24,7 @@ export enum Faction {
 }
 
 export interface Piece {
-  faction: Faction;
+  faction: Faction,
   pieceType: PieceType
 }
 
@@ -87,8 +87,8 @@ export enum VagabondItemSpecial {
 }
 
 export enum VagabondCharacterSpecial {
-  Arbiter = 'arbiter',
   Adventurer = 'adventurer',
+  Arbiter = 'arbiter',
   Harrier = 'harrier',
   Ranger = 'ranger',
   Ronin = 'ronin',
@@ -263,13 +263,16 @@ export enum QuestCard {
 export const SpecialCardName = Object.assign({}, EyrieLeaderSpecial, VagabondCharacterSpecial, DuchyMinisterSpecial);
 export type SpecialCardName = typeof SpecialCardName;
 
-// TODO: Might need this, unsure
-// export interface Location {
-//     index?: Number,                   // Clearing
-//     surroundingClearings?: Number[],  // Forest
-//     faction: Faction,                 // Supply or Hand
-//     // itemState
-// }
+export interface Forest {
+  clearings: number[]
+}
+
+export interface FactionBoard {
+  faction: Faction
+}
+
+// TODO: Add decree column, Vagabond board areas, quests
+export type RootLocation = ItemState | Faction | number | Forest | FactionBoard | VagabondRelationshipStatus;
 
 export interface Card {
     suit?: Suit,
@@ -282,7 +285,7 @@ export interface Turn {
 }
 
 export interface RootGame {
-  
+
   map: Map;                                     // the map the game takes place on
   deck: Deck;                                   // the deck used for the game
   clearings?: Suit[];                           // the suits for each clearing [1..12] (not necessary for fall, because it has a fixed suit order)

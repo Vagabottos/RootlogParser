@@ -61,7 +61,7 @@ test('Reveal specific card to whole table', t => {
 
   t.is(result.subjects[0].number, 1);
   t.is(result.subjects[0].card.suit, 'R');
-  t.is(result.subjects[0].card.cardName, 'dom');
+  t.is(result.subjects[0].card.cardName, 'dominance');
   t.is(result.subjects[0].revealer, 'C');
 
   t.is(result.targets[0], null);

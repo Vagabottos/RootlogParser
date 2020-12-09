@@ -1,6 +1,25 @@
 const GROUPING_REGEX = new RegExp(`\\((.+)\\)(.+)`);
 
 /**
+ * TODO: Fix error where moving to satchel + exhausted (Is this an error?)
+{
+  things: [
+    { number: 1, thing: 'r', start: null },
+    { number: 1, thing: 'r', start: null },
+    { number: 1, thing: 't', start: NaN },
+    { number: 1, thing: 't', start: NaN }
+  ],
+  destinations: [ NaN, 'e', NaN, 'e' ],
+  raw: '%r+%tt->s+e'
+}
+>>> { number: 1, thing: 'r', start: null }
+>>> { number: 1, thing: 'r', start: null }
+>>> { number: 1, thing: 't', start: NaN }
+>>> { number: 1, thing: 't', start: NaN }
+ */
+
+
+/**
  * If the action passed to this function is composite, e.g., (2%c+%h)$V->d, it decomposes it into an array of equivalent actions
  * If not, it simply returns the same action in an array
  * This makes parsing the regexes significantly easier, and lets us continue to use named regexes
