@@ -345,6 +345,16 @@ export function parseAction(action: string, faction: Faction): any {
     return parseCraft(action);
   }
 
+  if(action.includes('->')) {
+    if (action.includes('<->')) {
+      // TODO: Parse Corvid Trick action.
+    } else if (action.startsWith('$_')) {
+      // TODO: Parse special faction board actions.
+    } else {
+      return parseMove(action, faction);
+    }
+  }
+
   if(COMBAT_REGEX.test(action)) {
     return parseCombat(action, faction);
   }

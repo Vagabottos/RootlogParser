@@ -285,7 +285,7 @@ export interface Turn {
 }
 
 export interface RootGame {
-  
+
   map: Map;                                     // the map the game takes place on
   deck: Deck;                                   // the deck used for the game
   clearings?: Suit[];                           // the suits for each clearing [1..12] (not necessary for fall, because it has a fixed suit order)

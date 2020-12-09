@@ -54,4 +54,4 @@ test('Combat action parses ambushes without foil ambush correctly', t => {
   t.is(result.clearing, 11);
   t.is(result.ambush, 'R');
   t.is(result.foilAmbush, null);
-}); 
+});

@@ -25,4 +25,4 @@ test('Craft card parses correctly with full name of card', t => {
 
   t.is(result.craftCard, 'saboteurs' as CardName);
   t.is(result.craftItem, undefined);
-}); 
+});
