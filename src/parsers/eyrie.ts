@@ -8,16 +8,19 @@ const CHOOSE_LEADER_REGEX = formRegex('#<Leader|||chosenLeader>->$');
 const ADD_TO_DECREE_REGEX = formRegex('[Number|||countAdded]<Card|||cardAdded>E-><Decree|||columnAdded>')
 
 
-function parseAddToDecree(actions: string[]): ActionMove {
+export function parseAddToDecree(actions: string[]): ActionMove {
 
   const movingComponents = [];
   const destinations = [];
 
   for (let action of actions) {
     const result = action.match(ADD_TO_DECREE_REGEX);
-    const number = result.groups.countAdded || 1;
-    const component = parseCard(result.groups.cardAdded);
-    const destination = null;  // TODO: Destination is decree
+    const component = {
+      number: +(result.groups.countAdded || 1),
+      thing: parseCard(result.groups.cardAdded),
+      start: Faction.Eyrie  // TODO: Faction Board, not faction
+    };
+    const destination = null;  // TODO: Destination is decree - add that as a location
 
     movingComponents.push(component);
     destinations.push(destination);
@@ -39,16 +42,16 @@ export function parseEyrieAction(action: string): Action {
       things: [{
         number: 1,
         thing: { cardName: result.groups.chosenLeader },
-        start: null
+        start: null  // TODO: Genuinely null? No idea if this should be set to anything else
       }],
-      destinations: [Faction.Eyrie]
+      destinations: [Faction.Eyrie]  // TODO: Faction Board, not faction
     };
   }
 
   if (PURGE_DECREE_REGEX.test(action)) {
     return {
       things: [],         // TODO: All cards currently in Decree
-      destinations: []    // TODO: Discard pile
+      destinations: []    // TODO: Discard pile - add this as a location!
     };
   }
 

@@ -24,36 +24,19 @@ const EXPOSE_PLOT_REGEX = formRegex('?P<Piece|||plotGuessed><Clearing|||plotClea
 const FLIP_RAID_PLOT_REGEX = formRegex('Pt<Clearing|||plotClearing>^t_r');
 const PRICE_OF_FAILURE_REGEX = formRegex('#<Minister|||lostMinister>D$->');
 
-export const MOVE_REGEX = formRegex('[Number|||countMoved]<Component|||componentMoved>[Location|||origin]->[Location|||destination]');
+// export const MOVE_REGEX = formRegex('[Number|||countMoved]<Component|||componentMoved>[Location|||origin]->[Location|||destination]');
 
 // Allows movement to/from faction-specific locations: Item locations + Quests, The Burrow, as well as generic locations
 // Also allows movement of faction-specific components: Leaders, Characters, Ministers
 const EXTENDED_MOVE_REGEX = formRegex('[Number|||countMoved]<ExtendedComponent|||componentMoved>[ExtendedLocation|||origin]->[ExtendedLocation|||destination]');
 
-const FACTION_BOARD_REGEX = new RegExp(`([${ALL_FACTIONS}])?\\$`);
-
-const ITEM_REGEX_STRING = `\%[${ALL_ITEMS}]`;
+const FACTION_BOARD_REGEX = new RegExp(`^([${ALL_FACTIONS}])?\\$$`);
+const ITEM_REGEX_STRING = `^\%[${ALL_ITEMS}]$`;
 const ITEM_REGEX = new RegExp(ITEM_REGEX_STRING);
-const PIECE_REGEX_STRING = `[${ALL_FACTIONS}]?[${ALL_PIECES}]_?[swrkfrmcbe]?`;
+const PIECE_REGEX_STRING = `^[${ALL_FACTIONS}]?[${ALL_PIECES}]_?[swrkfrmcbe]?$`;
 const PIECE_REGEX = new RegExp(PIECE_REGEX_STRING);
-const CARD_REGEX_STRING = `[${ALL_SUITS}]?#[a-z]*`;
+const CARD_REGEX_STRING = `^[${ALL_SUITS}]?#[@a-z]*$`;
 const CARD_REGEX = new RegExp(CARD_REGEX_STRING);
-
-
-// TODO: Cleanup, or else find a way to implement with value in the future
-// function getDefaultOrigin(component: Piece | Card | Item, movingFaction: Faction): Location {
-//   if (Object.keys(Piece).find(key => Piece[key] === component)) {
-//     if (component === 'p') {
-//       // default pawn origin is its current location
-//       return null;  // TODO: Fix
-//     }
-//     // default non-pawn piece origin is the supply
-//     return { faction: movingFaction } as Location;
-//   } else if (Object.keys(Card).find(key => Piece[key] === component)) {
-//     // default card origin is
-//     return { faction: movingFaction } as Location;
-//   }
-// }
 
 // parse a VP action, defaults to +1
 export function parseVP(action: string, currentFaction: Faction): ActionGainVP {
@@ -111,14 +94,18 @@ export function parseCombat(action: string, takingFaction: Faction): ActionComba
   return parsedAction;
 }
 
+// TODO: We need to add special locations (VagabondRelationshipStatus, VagabondItemSpecial, Quest, discard pile, maybe others) and forests
+// TODO: Add default:
+//    start: deck [card], current pawn location [pawn], supply [piece], or current faction board [item]
+//    end: discard pile [card], supply/out of game [piece], or out of game [item]
 function parseLocation(location: string, takingFaction: Faction): RootLocation {
   if (location == null) {
     return null;
   } else if (FACTION_BOARD_REGEX.test(location)) {
     const [_, faction] = location.match(FACTION_BOARD_REGEX);
     return {
-      factionBoard: true,
       faction: faction || takingFaction  // TODO: This causes ambiguity between sending a card to a faction's hand VS board
+                                         // Should we add a dummy variable to FactionBoard interface to distinguish them?
     } as FactionBoard;
   } else if (Object.values(Faction).includes(location as Faction)) {
     return location as Faction;
@@ -142,7 +129,7 @@ export function parseMove(action: string, takingFaction: Faction): ActionMove {
   for (let simpleAction of actions) {
     const result = simpleAction.match(EXTENDED_MOVE_REGEX);
     const number = +(result.groups.countMoved || 1);
-    const origin = parseLocation(result.groups.origin, takingFaction);  // TODO: Add default: deck, current pawn location, supply, or current faction board
+    const origin = parseLocation(result.groups.origin, takingFaction);
 
     const component = (function parseThing(thingString: string): Piece | Card | Item {
       if (ITEM_REGEX.test(thingString)) {
@@ -157,7 +144,7 @@ export function parseMove(action: string, takingFaction: Faction): ActionMove {
         return parseCard(thingString);
       }
       return null;
-    }(result.groups.componentMoved));  // TODO: Add default: discard pile, supply, or removed from game
+    }(result.groups.componentMoved));
 
     movingComponents.push({
       number: number,
@@ -238,7 +225,7 @@ export function parseUpdateRelationshipAction(action: string, takingFaction: Fac
     return {
       things: [{
         number: 1,
-        thing: { faction: relationshipFaction, pieceType: null },
+        thing: { faction: relationshipFaction, pieceType: null },  // TODO: Probably adjust this?
         start: vagabondFaction // TODO: Make this the faction board?
       } as Thing],
       destinations: [relationshipLevel as VagabondRelationshipStatus]
@@ -268,7 +255,7 @@ export function parsePriceOfFailureAction(action: string): ActionMove {
       things: [{
         number: 1,
         thing: { cardName: result.groups.lostMinister } as Card,
-        start: Faction.Duchy
+        start: Faction.Duchy  // TODO: Faction Board, not faction
       } as Thing],
       destinations: [null]
     };
@@ -302,7 +289,7 @@ export function parsePlotAction(action: string): ActionTriggerPlot {
 
 }
 
-// parse out an action 
+// parse out an action
 export function parseAction(action: string, faction: Faction): any {
 
   let parsedAction;

@@ -22,7 +22,7 @@ export function parseVagabondAction(action: string, faction: Faction): Action {
 
   const simpleActions = splitAction(action);
 
-  if (simpleActions.every(act => RESTORE_ITEMS_REGEX.test(act))) {
+  if (simpleActions.every(act => RESTORE_ITEMS_REGEX.test(act))) {  // TODO: Can also represent 'damages all items'
 
     return {
       things: [],          // all damaged items
