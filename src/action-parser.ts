@@ -76,10 +76,12 @@ export function parseLoseVP(action: string, currentFaction: Faction): ActionGain
 }
 
 // parse a dominance/coalition action
-function parseDominance(action: string, takingFaction: Faction): ActionDominance {
+export function parseDominance(action: string, takingFaction: Faction): ActionDominance {
   const result = action.match(REMOVE_FACTION_MARKER_REGEX);
 
-  return { target: result.groups.targetFactionBoard ? result.groups.targetFactionBoard[0] as Faction : takingFaction };
+  const targetFactionBoard = result.groups.targetFactionBoard;
+  const targetFaction = (targetFactionBoard && targetFactionBoard.length > 1) ? targetFactionBoard[0] as Faction : takingFaction;
+  return { target: targetFaction };
 }
 
 // parse a craft card or item
@@ -236,8 +238,8 @@ export function parseUpdateRelationshipAction(action: string, takingFaction: Fac
     return {
       things: [{
         number: 1,
-        thing: relationshipFaction,
-        start: vagabondFaction
+        thing: { faction: relationshipFaction, pieceType: null },
+        start: vagabondFaction // TODO: Make this the faction board?
       } as Thing],
       destinations: [relationshipLevel as VagabondRelationshipStatus]
     };
