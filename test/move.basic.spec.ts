@@ -1,7 +1,7 @@
 import test from 'ava-ts';
 
 import { parseMove } from '../src/action-parser';
-import { Card, Faction, FactionBoard, Item, ItemState, Piece } from '../src/interfaces/rootgame';
+import { Card, Faction, FactionBoard, Item, ItemState, Piece, RootLocation } from '../src/interfaces/rootgame';
 
 test('Move - place one of current player\'s warriors', t => {
 
@@ -182,4 +182,16 @@ test('Move - remove sword', t => {
   t.is(result.things[0].start, null);
 
   t.is(result.destinations[0], null);
+});
+
+test('Move - retrieve from Discard pile', t => {
+
+  const result = parseMove('R#@*->P', 'P' as Faction);
+
+  t.is(result.things[0].number, 1);
+  t.is((result.things[0].thing as Card).cardName, 'Ambush');
+  t.is((result.things[0].thing as Card).suit, 'R');
+  t.is(result.things[0].start, "Discard pile");
+
+  t.is(result.destinations[0], 'P');
 });
