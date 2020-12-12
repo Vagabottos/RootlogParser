@@ -79,11 +79,11 @@ E:B#E->$_m/F#E->$_b/2w->12/3w12->3/2w12->9/b->3+9/++3/2#->E
 G:%b+%f+%r+%h->r/p->3/%r->e/%b->e+d/M#Q->$/++2/%h->e/Z%t/++2/%t->t/%f->e/p->12/#->G
 C:t->11+12/w4->6/w10->2/t11+t12->/b_s->6/++2/w->11+12/#->C
 V:%s+%r+%f->r/%r->e/%h5->$/++/%f->e/p->1/%s->e/#V->E/$_E->1/++/%f+%t->s+e/F#Q->$/++/#->V
-E:F#E->$_r/B#E->$_x/Z%h/++/w->1+3+12/2w3->8/2w1->5/XG12/(%t+%f+%s)$G->d/b->5+8/++4/3#->E
+E:F#E->$_r/B#E->$_x/Z%h/++/w->1+3+12/2w3->8/2w1->5/XG12/(%t+%f+%s)G$->d/b->5+8/++4/3#->E
 
 G:%f+%h+%r+%b->r/%h->e/F#G->E/%hE$->$/$_E->1/++/%h->e/%r->e/%h12->$/++/%h->e/%bd->t/#->G
 C:t->10+11+6/Z%b/++/M#C->/t->10/2t10->/b_w->6/++2/t11+t6->/b_r->7/++2/2#->C
-V:%t+%b+%r->r/%t->t/p->9/%h->e/Z%x/++/%f->e/p->3/%r+%x->e/M#Q->$/++/M#domV->$/++->E/#->V
+V:%t+%b+%r->r/%t->t/p->9/%h->e/Z%x/++/%f->e/p->3/%r+%x->e/M#Q->$/++/M#domV->$/++->E$/#->V
 E:2F#E->$_r/w->8/4w->5/3w5->4/XG3/%_->d/b->4/$_->/--5/#commander->$/++5/3#->E
 
 G:p->1_9_12/$_d->s+r/#->G
@@ -91,7 +91,7 @@ C:t->6+11+12/Zprop/B#C->/(w+r)12->11/#->C/4w11->5/F#C->/Ew5->/w->5/XE5/(w+Ew)5->
 V:2%f+%s+%h+%x->r/p->8/%f+%s->e/2R#V->E/$_E->2/%f->e/p->10/Z%b/++/%b->t/%x->e/Cw10->/$_C->h/M#C->/w->2/#->V
 E:(R+B)#E->$_r/Zswap/2w->8/3w8->10/XC10/2Cw10->/++4/2#->E/#E-> // They draw 2 but should draw 3, I think.
 
-G:p->9/%f->e/p->3/%h+%r->e/F#Q->$/2%h->e/2#G->C/$_C->2/++2/B#G->/B#dom->G/B#domG->$/++->C/XE9F@/%r+%h->d/Ew9->/%f->d/#->G
+G:p->9/%f->e/p->3/%h+%r->e/F#Q->$/2%h->e/2#G->C/$_C->2/++2/B#G->/B#dom->G/B#domG->$/++->C$/XE9F@/%r+%h->d/Ew9->/%f->d/#->G
 C:t->6+10+11/2B#C->/R#C->/Ew4->/w->4/3w5->4/3w2->8/XE4/(2Ew+Eb+2w)4->/++/R#C->/2w->2/XC8B@/(3w+Ew)8->/2w7->2/3w2->8/XE8/(Ew+Eb)8->/++/2#->C
 V:2%f+%s+%h+%x->r/p->7/%s->e/XC7/b_r7->/%h->e/Zsabo/2%f->e/p->11/%x->e/Cw11->/R#C->/Cw->2/#->V
 E:#C->E/#E->C/M#E->$_r/w->3+9/$_->/--3/++3/#charismatic->$/2#->E
@@ -107,7 +107,7 @@ C:t->10+11/Z%c/++3/F#domC->/Ew1->/w->1/XE1/++/t10+t11->/b_s->10/++3
 Winner: CG
 `
 
-const result = parseRootlog(testString);
+const result = parseRootlog(test2String);
 
 const util = require('util');
 const fs = require('fs');
