@@ -111,6 +111,8 @@ function parseLocation(location: string, takingFaction: Faction): RootLocation {
     return location as Faction;
   } else if (Object.values(ItemState).includes(location as ItemState)) {
     return location as ItemState;
+  } else if (location === "*") {
+    return "Discard pile";
   } else if (+location !== NaN) {
     return +location;
   }

@@ -272,7 +272,7 @@ export interface FactionBoard {
 }
 
 // TODO: Add decree column, Vagabond board areas, quests
-export type RootLocation = ItemState | Faction | number | Forest | FactionBoard | VagabondRelationshipStatus;
+export type RootLocation = ItemState | Faction | number | Forest | FactionBoard | VagabondRelationshipStatus | string;
 
 export interface Card {
     suit?: Suit,

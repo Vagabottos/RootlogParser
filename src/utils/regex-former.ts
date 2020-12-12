@@ -44,7 +44,7 @@ const LIZARD_OUTCAST_DEGREES = `(${Object.values(LizardOutcastSpecial).join('|')
 const DUCHY_SPECIFIC_LOCATIONS = `(0)`;  // The Burrow
 const DUCHY_MINISTERS = `(${Object.values(DuchyMinisterSpecial).join('|')})`;
 
-const EXTENDED_LOCATIONS = `(${VAGABOND_SPECIFIC_LOCATIONS}|${DUCHY_SPECIFIC_LOCATIONS}|${ALL_LOCATIONS})`;
+const EXTENDED_LOCATIONS = `(${VAGABOND_SPECIFIC_LOCATIONS}|${DUCHY_SPECIFIC_LOCATIONS}|${ALL_LOCATIONS}|\\*)`;
 // includes faction-specific card names
 const EXTENDED_COMPONENTS = `(${EYRIE_LEADERS}|${VAGABOND_CHARACTERS}|${DUCHY_MINISTERS}|${COMPONENT_REGEX_STRING})`;
 
