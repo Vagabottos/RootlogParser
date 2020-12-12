@@ -1,4 +1,4 @@
-import { Action, Card, Faction } from '../interfaces';
+import { Action, Faction } from '../interfaces';
 import { splitAction } from '../utils/action-splitter';
 import { formRegex } from '../utils/regex-former';
 
@@ -11,20 +11,22 @@ export function parseVagabondAction(action: string, faction: Faction): Action {
     const result = action.match(CHOOSE_CHARACTER_REGEX);
 
     return {
-      things: [result.groups.chosenCharacter as Card],
-      start: null,
-      end: faction
+      things: [{
+        number: 1,
+        thing: { cardName: result.groups.chosenCharacter },
+        start: null
+      }],
+      destinations: [faction]
     };
   }
 
   const simpleActions = splitAction(action);
 
-  if (simpleActions.every(act => RESTORE_ITEMS_REGEX.test(act))) {
+  if (simpleActions.every(act => RESTORE_ITEMS_REGEX.test(act))) {  // TODO: Can also represent 'damages all items'
 
     return {
-      things: [],   // all damaged items
-      start: null,  // damages
-      end: null     // track and satchel
+      things: [],          // all damaged items
+      destinations: []     // track and satchel
     };
   }
 
