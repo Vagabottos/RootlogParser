@@ -10,10 +10,13 @@
      "module": "commonjs",
      "moduleResolution": "node",
      "outDir": "./dist",
-     "declarationDir": "./dist",
      "emitDecoratorMetadata": true,
      "experimentalDecorators": true,
      "sourceMap": true,
-     "declaration": true
+     "sourceRoot": "src",
+     "declaration": true,
+     "declarationMap": true,
+     "declarationDir": "dist",
+     "rootDir": "."
   }
 }
