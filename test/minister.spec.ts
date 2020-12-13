@@ -1,25 +1,34 @@
 import test from 'ava-ts';
 
-import { parsePriceOfFailureAction } from '../src/action-parser';
-import { ActionMove, Faction } from '../src/interfaces';
-import { parseDuchyAction } from '../src/parsers';
+import { parseAction } from '../src/action-parser';
+import { ActionMove, Faction, FactionBoard } from '../src/interfaces';
 
-test('Correctly parses an action to make the Duchy lose a minister', t => {
+test('Correctly parses an action to make the Duchy lose a minister with default faction board', t => {
 
-  const result = parsePriceOfFailureAction('#brigadierD$->');
+  const result = parseAction('#brigadier$->', 'D' as Faction);
 
   t.is(result.things[0].number, 1);
   t.deepEqual(result.things[0].thing, { cardName: 'brigadier' });
-  t.is(result.things[0].start, 'D' as Faction);
+  t.is((result.things[0].start as FactionBoard).faction, 'D' as Faction);
+  t.is(result.destinations[0], null);
+});
+
+test('Correctly parses an action to make the Duchy lose a minister', t => {
+
+  const result = parseAction('#marshalD$->', 'D' as Faction);
+
+  t.is(result.things[0].number, 1);
+  t.deepEqual(result.things[0].thing, { cardName: 'marshal' });
+  t.is((result.things[0].start as FactionBoard).faction, 'D' as Faction);
   t.is(result.destinations[0], null);
 });
 
 test('Correctly parses an action to sway a minister', t => {
 
-  const result = parseDuchyAction('#earlofstone->$') as ActionMove;
+  const result = parseAction('#earlofstone->$', 'D' as Faction) as ActionMove;
 
   t.is(result.things[0].number, 1);
   t.deepEqual(result.things[0].thing, { cardName: 'earlofstone' });
   t.is(result.things[0].start, null);
-  t.is(result.destinations[0], 'D' as Faction);
+  t.is((result.destinations[0] as FactionBoard).faction, 'D' as Faction);
 });

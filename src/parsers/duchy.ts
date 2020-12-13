@@ -1,4 +1,4 @@
-import { Action, Faction, Thing } from '../interfaces';
+import { Action, Faction, FactionBoard, Thing } from '../interfaces';
 import { formRegex } from '../utils/regex-former';
 
 const SWAY_MINISTER_REGEX = formRegex('#<Minister|||swayedMinister>->$');
@@ -14,7 +14,7 @@ export function parseDuchyAction(action: string): Action {
         thing: { cardName: result.groups.swayedMinister },
         start: null
       } as Thing],
-      destinations: [Faction.Duchy]  // TODO: Faction Board, not faction
+      destinations: [{faction: Faction.Duchy} as FactionBoard]
     };
   }
 
