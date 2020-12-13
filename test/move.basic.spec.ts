@@ -14,7 +14,7 @@ test('Move - place one of current player\'s warriors', t => {
 
   t.is(result.things[0].start, null);
 
-  t.is(result.destinations[0], 10);
+  t.is(result.things[0].destination, 10);
 });
 
 test('Move - remove one of current player\'s warriors', t => {
@@ -28,7 +28,7 @@ test('Move - remove one of current player\'s warriors', t => {
 
   t.is(result.things[0].start, 10);
 
-  t.is(result.destinations[0], null);
+  t.is(result.things[0].destination, null);
 });
 
 test('Move - move one of current player\'s warriors', t => {
@@ -42,7 +42,7 @@ test('Move - move one of current player\'s warriors', t => {
 
   t.is(result.things[0].start, 6);
 
-  t.is(result.destinations[0], 8);
+  t.is(result.things[0].destination, 8);
 });
 
 test('Move - move two of current player\'s warriors, separately', t => {
@@ -59,7 +59,7 @@ test('Move - move two of current player\'s warriors, separately', t => {
   t.is((result.things[1].thing as RootPiece).pieceType, 'w');
   t.is(result.things[1].start, 4);
 
-  t.is(result.destinations[0], 8);
+  t.is(result.things[0].destination, 8);
 });
 
 test('Move - move two of current player\'s warriors, together', t => {
@@ -71,7 +71,7 @@ test('Move - move two of current player\'s warriors, together', t => {
   t.is((result.things[0].thing as RootPiece).pieceType, 'w');
   t.is(result.things[0].start, 5);
 
-  t.is(result.destinations[0], 8);
+  t.is(result.things[0].destination, 8);
 });
 
 test('Move - place four of current player\'s warriors in separate clearings', t => {
@@ -83,10 +83,10 @@ test('Move - place four of current player\'s warriors in separate clearings', t 
   t.is((result.things[0].thing as RootPiece).pieceType, 'w');
   t.is(result.things[0].start, null);
 
-  t.is(result.destinations[0], 8);
-  t.is(result.destinations[1], 11);
-  t.is(result.destinations[2], 6);
-  t.is(result.destinations[3], 5);
+  t.is(result.things[0].destination, 8);
+  t.is(result.things[1].destination, 11);
+  t.is(result.things[2].destination, 6);
+  t.is(result.things[3].destination, 5);
 });
 
 test('Move - remove four of current player\'s tokens in separate clearings', t => {
@@ -97,23 +97,25 @@ test('Move - remove four of current player\'s tokens in separate clearings', t =
   t.is((result.things[0].thing as RootPiece).faction, 'C');
   t.is((result.things[0].thing as RootPiece).pieceType, 't');
   t.is(result.things[0].start, 8);
+  t.is(result.things[0].destination, null);
 
   t.is(result.things[1].number, 1);
   t.is((result.things[1].thing as RootPiece).faction, 'C');
   t.is((result.things[1].thing as RootPiece).pieceType, 't');
   t.is(result.things[1].start, 11);
+  t.is(result.things[1].destination, null);
 
   t.is(result.things[2].number, 1);
   t.is((result.things[2].thing as RootPiece).faction, 'C');
   t.is((result.things[2].thing as RootPiece).pieceType, 't');
   t.is(result.things[2].start, 6);
+  t.is(result.things[2].destination, null);
 
   t.is(result.things[3].number, 1);
   t.is((result.things[3].thing as RootPiece).faction, 'C');
   t.is((result.things[3].thing as RootPiece).pieceType, 't');
   t.is(result.things[3].start, 5);
-
-  t.is(result.destinations[0], null);
+  t.is(result.things[3].destination, null);
 });
 
 test('Move - place current player\'s warriors on faction board', t => {
@@ -125,7 +127,7 @@ test('Move - place current player\'s warriors on faction board', t => {
   t.is((result.things[0].thing as RootPiece).pieceType, 'w');
   t.is(result.things[0].start, null);
 
-  t.is((result.destinations[0] as RootFactionBoard).faction, 'A');
+  t.is((result.things[0].destination as RootFactionBoard).faction, 'A');
 });
 
 test('Move - place current player\'s warriors on faction board', t => {
@@ -137,7 +139,7 @@ test('Move - place current player\'s warriors on faction board', t => {
   t.is((result.things[0].thing as RootPiece).pieceType, 'w');
   t.is((result.things[0].start as RootFactionBoard).faction, 'L');
 
-  t.is(result.destinations[0], null);
+  t.is(result.things[0].destination, null);
 });
 
 test('Move - place cards onto Woodland Alliance\'s faction board', t => {
@@ -148,7 +150,7 @@ test('Move - place cards onto Woodland Alliance\'s faction board', t => {
   t.is((result.things[0].thing as RootCard).suit, 'R');
   t.is(result.things[0].start, 'C' as RootFaction);
 
-  t.is((result.destinations[0] as RootFactionBoard).faction, 'A');
+  t.is((result.things[0].destination as RootFactionBoard).faction, 'A');
 });
 
 test('Move - exhaust sword', t => {
@@ -159,7 +161,7 @@ test('Move - exhaust sword', t => {
   t.is(result.things[0].thing as RootItem, 's');
   t.is(result.things[0].start, null);
 
-  t.is(result.destinations[0], 'e' as RootItemState);
+  t.is(result.things[0].destination, 'e' as RootItemState);
 });
 
 test('Move - refresh sword', t => {
@@ -170,7 +172,7 @@ test('Move - refresh sword', t => {
   t.is(result.things[0].thing as RootItem, 's');
   t.is(result.things[0].start, null);
 
-  t.is(result.destinations[0], 'r' as RootItemState);
+  t.is(result.things[0].destination, 'r' as RootItemState);
 });
 
 test('Move - remove sword', t => {
@@ -181,7 +183,7 @@ test('Move - remove sword', t => {
   t.is(result.things[0].thing as RootItem, 's');
   t.is(result.things[0].start, null);
 
-  t.is(result.destinations[0], null);
+  t.is(result.things[0].destination, null);
 });
 
 test('Move - retrieve from Discard pile', t => {
@@ -193,5 +195,5 @@ test('Move - retrieve from Discard pile', t => {
   t.is((result.things[0].thing as RootCard).suit, 'R');
   t.is(result.things[0].start, "Discard pile");
 
-  t.is(result.destinations[0], 'P');
+  t.is(result.things[0].destination, 'P');
 });

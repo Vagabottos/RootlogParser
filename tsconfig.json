@@ -15,7 +15,6 @@
      "sourceMap": true,
      "sourceRoot": "src",
      "declaration": true,
-     "declarationMap": true,
      "declarationDir": "dist",
      "rootDir": "."
   }

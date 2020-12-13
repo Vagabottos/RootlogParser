@@ -125,7 +125,6 @@ export function parseMove(action: string, takingFaction: RootFaction): RootActio
 
   const actions = splitAction(action);
   const movingComponents = [];
-  const destinations = [];
 
   for (let simpleAction of actions) {
     const result = simpleAction.match(EXTENDED_MOVE_REGEX);
@@ -139,7 +138,8 @@ export function parseMove(action: string, takingFaction: RootFaction): RootActio
         const [_, faction, piece] = thingString.match(new RegExp(`([${ALL_FACTIONS}])?(.+)`));
         return {
           faction: faction as RootFaction || takingFaction,
-          pieceType: piece as RootPieceType
+          piece: piece,
+          pieceType: piece[0] as RootPieceType
         }
       } else if (CARD_REGEX.test(thingString)) {
         return parseCard(thingString);
@@ -150,16 +150,14 @@ export function parseMove(action: string, takingFaction: RootFaction): RootActio
     movingComponents.push({
       number: number,
       thing: component,
-      start: origin
+      start: origin,
+      destination: parseLocation(result.groups.destination, takingFaction)
     } as RootThing);
-    destinations.push(parseLocation(result.groups.destination, takingFaction));
   }
 
   return {
-    things: movingComponents,
-    destinations: destinations
+    things: movingComponents
   };
-
 }
 
 export function parseCard(card: string): RootCard {
@@ -226,10 +224,10 @@ export function parseUpdateRelationshipAction(action: string, takingFaction: Roo
     return {
       things: [{
         number: 1,
-        thing: { faction: relationshipFaction, pieceType: null },  // TODO: Probably adjust this?
-        start: vagabondFaction // TODO: Make this the faction board?
-      } as RootThing],
-      destinations: [relationshipLevel as RootVagabondRelationshipStatus]
+        thing: {faction: relationshipFaction, piece: relationshipFaction},  // TODO: Probably adjust this?
+        start: {faction: vagabondFaction} as RootFactionBoard,
+        destination: relationshipLevel as RootVagabondRelationshipStatus
+      } as RootThing]
     };
   }
 
@@ -256,9 +254,9 @@ export function parsePriceOfFailureAction(action: string): RootActionMove {
       things: [{
         number: 1,
         thing: { cardName: result.groups.lostMinister } as RootCard,
-        start: {faction: RootFaction.Duchy} as RootFactionBoard
-      } as RootThing],
-      destinations: [null]
+        start: {faction: RootFaction.Duchy} as RootFactionBoard,
+        destination: null
+      } as RootThing]
     };
   }
 

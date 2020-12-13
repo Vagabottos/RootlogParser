@@ -34,6 +34,7 @@ export enum RootFaction {
 export interface RootPiece {
   faction: RootFaction;
   pieceType: RootPieceType;
+  piece: string;
 }
 
 export enum RootPieceType {

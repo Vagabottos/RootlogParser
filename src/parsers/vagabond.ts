@@ -1,9 +1,9 @@
-import { RootAction, RootFaction } from '../interfaces';
+import { RootAction, RootFaction, RootFactionBoard } from '../interfaces';
 import { splitAction } from '../utils/action-splitter';
 import { formRegex } from '../utils/regex-former';
 
 const CHOOSE_CHARACTER_REGEX = formRegex('#<Character|||chosenCharacter>->$');
-const RESTORE_ITEMS_REGEX = formRegex('$_d-><ExtendedLocation|||restoredLocation>');
+const RESTORE_ITEMS_REGEX = formRegex('%_d-><ExtendedLocation|||restoredLocation>');
 
 export function parseVagabondAction(action: string, faction: RootFaction): RootAction {
 
@@ -14,9 +14,9 @@ export function parseVagabondAction(action: string, faction: RootFaction): RootA
       things: [{
         number: 1,
         thing: { cardName: result.groups.chosenCharacter },
-        start: null
-      }],
-      destinations: [faction]
+        start: null,
+        destination: {faction: faction} as RootFactionBoard
+      }]
     };
   }
 
@@ -25,8 +25,7 @@ export function parseVagabondAction(action: string, faction: RootFaction): RootA
   if (simpleActions.every(act => RESTORE_ITEMS_REGEX.test(act))) {  // TODO: Can also represent 'damages all items'
 
     return {
-      things: [],          // all damaged items
-      destinations: []     // track and satchel
+      things: [],          // all damaged items move to satchel
     };
   }
 
