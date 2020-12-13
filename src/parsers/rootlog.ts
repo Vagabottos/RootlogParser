@@ -1,4 +1,4 @@
-import { RootGame, Suit } from '../interfaces';
+import { RootGame, RootSuit } from '../interfaces';
 import { parseClearings, parseDeck, parseMap, parsePlayer, parsePool, parseTurn, parseWinner } from './metadata';
 
 export function parseRootlog(rootlog: string): RootGame {
@@ -7,7 +7,7 @@ export function parseRootlog(rootlog: string): RootGame {
     players: {},
 
     // default clearings are the default fall map layout
-    clearings: ['F', 'M', 'B', 'B', 'B', 'F', 'M', 'F', 'M', 'B', 'M', 'F'] as Suit[]
+    clearings: ['F', 'M', 'B', 'B', 'B', 'F', 'M', 'F', 'M', 'B', 'M', 'F'] as RootSuit[]
   };
 
   rootlog.split('\n').forEach((line) => {

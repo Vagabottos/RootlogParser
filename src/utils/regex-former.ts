@@ -1,13 +1,13 @@
-import { CardName, DuchyMinisterSpecial, EyrieLeaderSpecial, EyrieSpecial, Faction, Item, ItemState, LizardOutcastSpecial, PieceType, QuestCard, RiverfolkPriceSpecial, SpecialCardName, Suit, VagabondCharacterSpecial, VagabondItemSpecial, VagabondRelationshipStatus } from '../interfaces';
+import { RootCardName, RootDuchyMinisterSpecial, RootEyrieLeaderSpecial, RootEyrieSpecial, RootFaction, RootItem, RootItemState, RootLizardOutcastSpecial, RootPieceType, RootQuestCard, RootRiverfolkPriceSpecial, RootSpecialCardName, RootSuit, RootVagabondCharacterSpecial, RootVagabondItemSpecial, RootVagabondRelationshipStatus } from '../interfaces';
 
 const DIVIDER_BEFORE_GROUP_NAME = '|||';  // arbitrarily chosen to be a divider that will never appear in Rootlog code
 
-const ALL_FACTIONS = `[${Object.values(Faction).join('')}]`;          // [CEAVGLODP]
-const ALL_SUITS = `[${Object.values(Suit).join('')}]`;                // [BFMR]
-const ALL_ITEM_TYPES = `[${Object.values(Item).join('')}]`;           // [sbcxhtrf]
-const ALL_PIECE_TYPES = `[${Object.values(PieceType).join('')}]`;     // [wpbtr]
-const ALL_ITEM_STATE = `[${Object.values(ItemState).join('')}]`;      // [re]
-const ALL_CARD_NAMES = `(${Object.values(CardName).join('|')})`;      // (@|dom|armor|bank|...|tun)
+const ALL_FACTIONS = `[${Object.values(RootFaction).join('')}]`;          // [CEAVGLODP]
+const ALL_SUITS = `[${Object.values(RootSuit).join('')}]`;                // [BFMR]
+const ALL_ITEM_TYPES = `[${Object.values(RootItem).join('')}]`;           // [sbcxhtrf]
+const ALL_PIECE_TYPES = `[${Object.values(RootPieceType).join('')}]`;     // [wpbtr]
+const ALL_ITEM_STATE = `[${Object.values(RootItemState).join('')}]`;      // [re]
+const ALL_CARD_NAMES = `(${Object.values(RootCardName).join('|')})`;      // (@|dom|armor|bank|...|tun)
 
 const CLEARING = '(1[0-2]|[1-9])';                                    // a number from 1-12
 const FOREST = `(${CLEARING}(_${CLEARING}){2,})`;                     // 3+ adjacent clearings, separated by underscores
@@ -28,21 +28,21 @@ const COMPONENT_REGEX_STRING = `(${CARD_REGEX_STRING}|${PIECE_REGEX_STRING}|${IT
 
 // Faction-specific Regex elements
 // Eyrie Dynasties
-const EYRIE_COLUMNS = `(${Object.values(EyrieSpecial).map(col => `\\$_${col}`).join('|')})`;    // ($_r|$_m|$_x|$_b)
-const EYRIE_LEADERS = `(${Object.values(EyrieLeaderSpecial).join('|')})`;
+const EYRIE_COLUMNS = `(${Object.values(RootEyrieSpecial).map(col => `\\$_${col}`).join('|')})`;    // ($_r|$_m|$_x|$_b)
+const EYRIE_LEADERS = `(${Object.values(RootEyrieLeaderSpecial).join('|')})`;
 // Vagabond
-const VAGABOND_RELATIONSHIP_STATUS = `(${Object.values(VagabondRelationshipStatus).join('|')})`;
-const QUEST_LOCATION = `(${Object.values(QuestCard).join('|')}|Q)`;
-const ITEM_LOCATION = `(${Object.values(VagabondItemSpecial).join('|')}${ALL_ITEM_STATE}?)`;
+const VAGABOND_RELATIONSHIP_STATUS = `(${Object.values(RootVagabondRelationshipStatus).join('|')})`;
+const QUEST_LOCATION = `(${Object.values(RootQuestCard).join('|')}|Q)`;
+const ITEM_LOCATION = `(${Object.values(RootVagabondItemSpecial).join('|')}${ALL_ITEM_STATE}?)`;
 const VAGABOND_SPECIFIC_LOCATIONS = `(${QUEST_LOCATION}|${ITEM_LOCATION})`;
-const VAGABOND_CHARACTERS = `(${Object.values(VagabondCharacterSpecial).join('|')})`;
+const VAGABOND_CHARACTERS = `(${Object.values(RootVagabondCharacterSpecial).join('|')})`;
 // Riverfolk Company
-const RIVERFOLK_SERVICES = `(${Object.values(RiverfolkPriceSpecial).join('|')})`;
+const RIVERFOLK_SERVICES = `(${Object.values(RootRiverfolkPriceSpecial).join('|')})`;
 // Lizard Cult
-const LIZARD_OUTCAST_DEGREES = `(${Object.values(LizardOutcastSpecial).join('|')})`
+const LIZARD_OUTCAST_DEGREES = `(${Object.values(RootLizardOutcastSpecial).join('|')})`
 // Underground Duchy
 const DUCHY_SPECIFIC_LOCATIONS = `(0)`;  // The Burrow
-const DUCHY_MINISTERS = `(${Object.values(DuchyMinisterSpecial).join('|')})`;
+const DUCHY_MINISTERS = `(${Object.values(RootDuchyMinisterSpecial).join('|')})`;
 
 const EXTENDED_LOCATIONS = `(${VAGABOND_SPECIFIC_LOCATIONS}|${DUCHY_SPECIFIC_LOCATIONS}|${ALL_LOCATIONS}|\\*)`;
 // includes faction-specific card names

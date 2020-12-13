@@ -1,5 +1,5 @@
 import { parseAction } from '../action-parser';
-import { Deck, Faction, Map, Suit, Turn } from '../interfaces';
+import { RootDeck, RootFaction, RootMap, RootSuit, RootTurn } from '../interfaces';
 
 
 function cleanText(str: string = ''): string {
@@ -7,23 +7,23 @@ function cleanText(str: string = ''): string {
 }
 
 // map line format: Map: <text>
-export function parseMap(line: string): Map {
-  return cleanText(line.split('Map:')[1]) as Map;
+export function parseMap(line: string): RootMap {
+  return cleanText(line.split('Map:')[1]) as RootMap;
 }
 
 // deck line format: Deck: <text>
-export function parseDeck(line: string): Deck {
-  return cleanText(line.split('Deck:')[1]) as Deck;
+export function parseDeck(line: string): RootDeck {
+  return cleanText(line.split('Deck:')[1]) as RootDeck;
 }
 
 // winner line format: Winner: <factions...>
-export function parseWinner(line: string): Faction[] {
-  return cleanText(line.split('Winner:')[1]).split('') as Faction[];
+export function parseWinner(line: string): RootFaction[] {
+  return cleanText(line.split('Winner:')[1]).split('') as RootFaction[];
 }
 
 // pool line format: Pool: <factions...>
-export function parsePool(line: string): Faction[] {
-  return cleanText(line.split('Pool:')[1]).split('') as Faction[];
+export function parsePool(line: string): RootFaction[] {
+  return cleanText(line.split('Pool:')[1]).split('') as RootFaction[];
 }
 
 // player line format: <Faction>: Player Name
@@ -32,7 +32,7 @@ export function parsePlayer(line: string): string {
 }
 
 // clearing line format: Clearings: <suit>X, <suit>Y (x/y = clearing num, 1-indexed)
-export function parseClearings(line: string): Suit[] {
+export function parseClearings(line: string): RootSuit[] {
   const suitPos = [];
 
   line.split('Clearings:')[1].split(',').map(x => x.trim()).forEach((suitWithPos, idx) => {
@@ -41,20 +41,20 @@ export function parseClearings(line: string): Suit[] {
 
     if(isNaN(pos)) pos = idx + 1;
 
-    suitPos[pos - 1] = suit as Suit;
+    suitPos[pos - 1] = suit as RootSuit;
   })
 
   return suitPos;
 }
 
 // parse out a turn, anything with a single character followed by the colon
-export function parseTurn(line: string): Turn {
-  const turn: Partial<Turn> = {
+export function parseTurn(line: string): RootTurn {
+  const turn: Partial<RootTurn> = {
     actions: []
   };
 
   const [taker, unparsedActions] = line.split(':');
-  turn.taker = taker as Faction;
+  turn.taker = taker as RootFaction;
 
   unparsedActions.split(/[\/;]/).forEach(action => {
     const actionObj = parseAction(action, turn.taker) || {raw: action};
@@ -62,5 +62,5 @@ export function parseTurn(line: string): Turn {
     turn.actions.push(actionObj);
   });
 
-  return turn as Turn;
+  return turn as RootTurn;
 }

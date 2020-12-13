@@ -1,17 +1,17 @@
 import { Action } from './actions';
 
-export type Map = 'Fall' | 'Winter' | 'Lake' | 'Mountain';
+export type RootMap = 'Fall' | 'Winter' | 'Lake' | 'Mountain';
 
-export type Deck = 'Standard' | 'E&P';
+export type RootDeck = 'Standard' | 'E&P';
 
-export enum Suit {
+export enum RootSuit {
   Bird = 'B',
   Fox = 'F',
   Mouse = 'M',
   Rabbit = 'R'
 }
 
-export enum Faction {
+export enum RootFaction {
   Marquise = 'C',
   Eyrie = 'E',
   Woodland = 'A',
@@ -23,12 +23,12 @@ export enum Faction {
   Corvid = 'P'
 }
 
-export interface Piece {
-  faction: Faction,
-  pieceType: PieceType
+export interface RootPiece {
+  faction: RootFaction;
+  pieceType: RootPieceType;
 }
 
-export enum PieceType {
+export enum RootPieceType {
   Warrior = 'w',
   Pawn = 'p',
   Building = 'b',
@@ -36,7 +36,7 @@ export enum PieceType {
   Raft = 'r'
 }
 
-export enum Item {
+export enum RootItem {
   Sword = 's',
   Bag = 'b',
   Coin = 'c',
@@ -47,12 +47,12 @@ export enum Item {
   Boot = 'f'
 }
 
-export enum ItemState {
+export enum RootItemState {
   FaceUp = 'r',
   FaceDown = 'e'
 }
 
-export enum MarquiseSpecial {
+export enum RootMarquiseSpecial {
   Sawmill = 'b_s',
   Workshop = 'b_w',
   Recruiter = 'b_r',
@@ -60,33 +60,33 @@ export enum MarquiseSpecial {
   Wood = 't'
 }
 
-export enum EyrieSpecial {
+export enum RootEyrieSpecial {
   Recruit = 'r',
   Move = 'm',
   Battle = 'x',
   Build = 'b'
 }
 
-export enum EyrieLeaderSpecial {
+export enum RootEyrieLeaderSpecial {
   Builder = 'builder',
   Charismatic = 'charismatic',
   Commander = 'commander',
   Despot = 'despot'
 }
 
-export enum WoodlandSpecial {
+export enum RootWoodlandSpecial {
   FoxBase = 'b_f',
   RabbitBase = 'b_r',
   MouseBase = 'b_m'
 }
 
-export enum VagabondItemSpecial {
+export enum RootVagabondItemSpecial {
   Satchel = 's',
   Damaged = 'd',
   Track = 't'
 }
 
-export enum VagabondCharacterSpecial {
+export enum RootVagabondCharacterSpecial {
   Adventurer = 'adventurer',
   Arbiter = 'arbiter',
   Harrier = 'harrier',
@@ -98,7 +98,7 @@ export enum VagabondCharacterSpecial {
   Vagrant = 'vagrant'
 }
 
-export enum VagabondRelationshipStatus {
+export enum RootVagabondRelationshipStatus {
   Hostile = 'h',
   Indifferent = '0',
   IndifferentPlusOne = '1',
@@ -106,36 +106,36 @@ export enum VagabondRelationshipStatus {
   Allied = 'a'
 }
 
-export enum RiverfolkSpecial {
+export enum RootRiverfolkSpecial {
   FoxPost = 't_f',
   RabbitPost = 't_r',
   MousePost = 't_m'
 }
 
-export enum RiverfolkPriceSpecial {
+export enum RootRiverfolkPriceSpecial {
   HandCard = 'h',
   Riverboats = 'r',
   Mercenaries = 'm'
 }
 
-export enum LizardSpecial {
+export enum RootLizardSpecial {
   FoxGarden = 'b_f',
   RabbitGarden = 'b_r',
   MouseGarden = 'b_m'
 }
 
-export enum LizardOutcastSpecial {
+export enum RootLizardOutcastSpecial {
   Outcast = 'o',
   HatedOutcast = 'ho'
 }
 
-export enum DuchySpecial {
+export enum RootDuchySpecial {
   Citadel = 'b_c',
   Market = 'b_m',
   Burrow = '0'
 }
 
-export enum DuchyMinisterSpecial {
+export enum RootDuchyMinisterSpecial {
   Captain = 'captain',
   Marshal = 'marshal',
   Foremole = 'foremole',
@@ -147,7 +147,7 @@ export enum DuchyMinisterSpecial {
   Earl = 'earlofstone'
 }
 
-export enum CorvidSpecial {
+export enum RootCorvidSpecial {
   Plot = 't',
   BombPlot = 't_b',
   SnarePlot = 't_s',
@@ -155,7 +155,7 @@ export enum CorvidSpecial {
   ExtortionPlot = 't_e'
 }
 
-export enum CardName {
+export enum RootCardName {
 
   // all decks
   Ambush = '@',
@@ -248,7 +248,7 @@ export enum CardName {
   TunFullName = 'tunnels'
 }
 
-export enum QuestCard {
+export enum RootQuestCard {
   Errand = 'errand',
   Bandits = 'bandits',
   Bear = 'bear',
@@ -260,38 +260,38 @@ export enum QuestCard {
   Shed = 'shed'
 }
 
-export const SpecialCardName = Object.assign({}, EyrieLeaderSpecial, VagabondCharacterSpecial, DuchyMinisterSpecial);
-export type SpecialCardName = typeof SpecialCardName;
+export const RootSpecialCardName = Object.assign({}, RootEyrieLeaderSpecial, RootVagabondCharacterSpecial, RootDuchyMinisterSpecial);
+export type RootSpecialCardName = typeof RootSpecialCardName;
 
-export interface Forest {
-  clearings: number[]
+export interface RootForest {
+  clearings: number[];
 }
 
-export interface FactionBoard {
-  faction: Faction
+export interface RootFactionBoard {
+  faction: RootFaction;
 }
 
 // TODO: Add decree column, Vagabond board areas, quests
-export type RootLocation = ItemState | Faction | number | Forest | FactionBoard | VagabondRelationshipStatus | string;
+export type RootLocation = RootItemState | RootFaction | number | RootForest | RootFactionBoard | RootVagabondRelationshipStatus | string;
 
-export interface Card {
-    suit?: Suit,
-    cardName?: string
+export interface RootCard {
+    suit?: RootSuit;
+    cardName?: string;
 }
 
-export interface Turn {
-  taker: Faction;
+export interface RootTurn {
+  taker: RootFaction;
   actions: Action[];
 }
 
 export interface RootGame {
 
-  map: Map;                                     // the map the game takes place on
-  deck: Deck;                                   // the deck used for the game
-  clearings?: Suit[];                           // the suits for each clearing [1..12] (not necessary for fall, because it has a fixed suit order)
-  pool?: Faction[];                             // the faction pool (if using a draft)
-  players: Partial<Record<Faction, string>>;    // { [factionkey]: player }
-  turns: Turn[];                                // all of the game turns in order
-  winner: Faction[];                            // the winner(s) of the game
+  map: RootMap;                                     // the map the game takes place on
+  deck: RootDeck;                                   // the deck used for the game
+  clearings?: RootSuit[];                           // the suits for each clearing [1..12] (not necessary for fall, because it has a fixed suit order)
+  pool?: RootFaction[];                             // the faction pool (if using a draft)
+  players: Partial<Record<RootFaction, string>>;    // { [factionkey]: player }
+  turns: RootTurn[];                                // all of the game turns in order
+  winner: RootFaction[];                            // the winner(s) of the game
 
 }

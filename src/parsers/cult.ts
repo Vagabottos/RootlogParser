@@ -1,4 +1,4 @@
-import { Action, Suit } from '../interfaces';
+import { Action, RootSuit } from '../interfaces';
 import { formRegex } from '../utils/regex-former';
 
 const SET_OUTCAST_REGEX = formRegex('$_<Outcast|||outcastDegree>-><Suit|||outcastSuit>');
@@ -10,7 +10,7 @@ export function parseCultAction(action: string): Action {
 
     return {
       degree: result.groups.outcastDegree,
-      suit: result.groups.outcastSuit as Suit
+      suit: result.groups.outcastSuit as RootSuit
     };
   }
 

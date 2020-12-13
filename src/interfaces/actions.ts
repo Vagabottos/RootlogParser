@@ -1,28 +1,28 @@
-import { Card, CardName, Faction, Item, Piece, RootLocation, Suit } from './rootgame';
+import { RootCard, RootCardName, RootFaction, RootItem, RootPiece, RootLocation, RootSuit } from './rootgame';
 
 export type Action = ActionGainVP | ActionCraft | ActionMove | ActionDominance | ActionCombat | ActionReveal | ActionClearPath | ActionSetOutcast | ActionSetPrices | ActionUpdateFunds | ActionTriggerPlot | ActionSwapPlots;
 
 export interface ActionGainVP {
   vp: number;
-  faction: Faction;
+  faction: RootFaction;
 }
 
 export interface ActionCraft {
-  craftItem?: Item;
-  craftCard?: CardName;
+  craftItem?: RootItem;
+  craftCard?: RootCardName;
 }
 
 export interface ActionCombat {
-  attacker: Faction;
-  defender: Faction;
+  attacker: RootFaction;
+  defender: RootFaction;
   clearing: number;
-  ambush?: Suit;
-  foilAmbush?: Suit;
+  ambush?: RootSuit;
+  foilAmbush?: RootSuit;
 }
 
 export interface Thing {
   number: number;
-  thing: Card | Item | Piece;
+  thing: RootCard | RootItem | RootPiece;
   start: RootLocation;
 }
 
@@ -32,18 +32,18 @@ export interface ActionMove {
 }
 
 export interface ActionDominance {
-  target: Faction;
+  target: RootFaction;
 }
 
 export interface SubjectReveal {
     number?: number,
-    card?: Card,
-    revealer: Faction
+    card?: RootCard,
+    revealer: RootFaction
 }
 
 export interface ActionReveal {
   subjects: SubjectReveal[];
-  targets: Faction[];
+  targets: RootFaction[];
 }
 
 export interface ActionClearPath {
@@ -52,7 +52,7 @@ export interface ActionClearPath {
 
 export interface ActionSetOutcast {
   degree: string;  // TODO: Come up with a better name for this to distinguish between Outcast and Hated Outcast
-  suit: Suit;
+  suit: RootSuit;
 }
 
 export interface ActionSetPrices {

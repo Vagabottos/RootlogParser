@@ -1,11 +1,11 @@
-import { Action, Faction } from '../interfaces';
+import { Action, RootFaction } from '../interfaces';
 import { splitAction } from '../utils/action-splitter';
 import { formRegex } from '../utils/regex-former';
 
 const CHOOSE_CHARACTER_REGEX = formRegex('#<Character|||chosenCharacter>->$');
 const RESTORE_ITEMS_REGEX = formRegex('$_d-><ExtendedLocation|||restoredLocation>');
 
-export function parseVagabondAction(action: string, faction: Faction): Action {
+export function parseVagabondAction(action: string, faction: RootFaction): Action {
 
   if (CHOOSE_CHARACTER_REGEX.test(action)) {
     const result = action.match(CHOOSE_CHARACTER_REGEX);
