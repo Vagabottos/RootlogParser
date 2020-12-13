@@ -1,10 +1,10 @@
-import { Action } from '../interfaces';
+import { RootAction } from '../interfaces';
 import { formRegex } from '../utils/regex-former';
 
 const FLIP_PLOT_REGEX = formRegex('t<Clearing|||plotClearing>^<Piece|||plotFlipped>');
 const TRICK_PLOT_REGEX = formRegex('t<Clearing|||firstClearing><->t<Clearing|||secondClearing>');
 
-export function parseConspiracyAction(action: string): Action {
+export function parseConspiracyAction(action: string): RootAction {
 
   if (FLIP_PLOT_REGEX.test(action)) {
     const result = action.match(FLIP_PLOT_REGEX);

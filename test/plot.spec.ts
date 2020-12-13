@@ -1,6 +1,6 @@
 import test from 'ava-ts';
 
-import { ActionSwapPlots, ActionTriggerPlot, RootFaction } from '../src/interfaces';
+import { RootActionSwapPlots, RootActionTriggerPlot, RootFaction } from '../src/interfaces';
 import { parseConspiracyAction } from '../src/parsers';
 import { parseAction, parsePlotAction } from '../src/action-parser';
 
@@ -38,7 +38,7 @@ test('Correctly parses an action to trigger a raid plot in a clearing with multi
 
 test('Correctly parses action to flip a plot', t => {
 
-  const result = parseAction('t6^t_e', RootFaction.Corvid) as ActionTriggerPlot;
+  const result = parseAction('t6^t_e', RootFaction.Corvid) as RootActionTriggerPlot;
 
   t.is(result.clearing, 6);
   t.is(result.plot, 't_e');
@@ -46,7 +46,7 @@ test('Correctly parses action to flip a plot', t => {
 
 test('Correctly parses action to flip a plot in a clearing with multiple digits', t => {
 
-  const result = parseAction('t11^t_e', RootFaction.Corvid) as ActionTriggerPlot;
+  const result = parseAction('t11^t_e', RootFaction.Corvid) as RootActionTriggerPlot;
 
   t.is(result.clearing, 11);
   t.is(result.plot, 't_e');
@@ -54,14 +54,14 @@ test('Correctly parses action to flip a plot in a clearing with multiple digits'
 
 test('Correctly parses action to swap plots', t => {
 
-  const result = parseAction('t1<->t9', RootFaction.Corvid) as ActionSwapPlots;
+  const result = parseAction('t1<->t9', RootFaction.Corvid) as RootActionSwapPlots;
 
   t.deepEqual(result.clearings, [1, 9]);
 });
 
 test('Correctly parses action to swap plots in clearings with multiple digits', t => {
 
-  const result = parseAction('t10<->t11', RootFaction.Corvid) as ActionSwapPlots;
+  const result = parseAction('t10<->t11', RootFaction.Corvid) as RootActionSwapPlots;
 
   t.deepEqual(result.clearings, [10, 11]);
 });

@@ -1,11 +1,11 @@
 import test from 'ava-ts';
 
-import { ActionMove, RootFaction } from '../src/interfaces';
+import { RootActionMove, RootFaction } from '../src/interfaces';
 import { parseAction } from '../src/action-parser';
 
 test('Correctly parses an action to choose a Character', t => {
 
-  const result = parseAction('#tinker->$', 'V' as RootFaction) as ActionMove;
+  const result = parseAction('#tinker->$', 'V' as RootFaction) as RootActionMove;
 
   t.deepEqual(result.things, [{
     number: 1,
@@ -17,7 +17,7 @@ test('Correctly parses an action to choose a Character', t => {
 
 test('Correctly parses an action to restore all items', t => {
 
-  const result = parseAction('$_d->s', 'V' as RootFaction) as ActionMove;
+  const result = parseAction('$_d->s', 'V' as RootFaction) as RootActionMove;
 
   t.deepEqual(result.things, []);  // TODO: Implement in code
   t.deepEqual(result.destinations, []);  // TODO: Implement in code

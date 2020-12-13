@@ -1,7 +1,7 @@
 import test from 'ava-ts';
 
 import { parseAction } from '../src/action-parser';
-import { ActionMove, RootFaction, RootFactionBoard } from '../src/interfaces';
+import { RootActionMove, RootFaction, RootFactionBoard } from '../src/interfaces';
 
 test('Correctly parses an action to make the Duchy lose a minister with default faction board', t => {
 
@@ -25,7 +25,7 @@ test('Correctly parses an action to make the Duchy lose a minister', t => {
 
 test('Correctly parses an action to sway a minister', t => {
 
-  const result = parseAction('#earlofstone->$', 'D' as RootFaction) as ActionMove;
+  const result = parseAction('#earlofstone->$', 'D' as RootFaction) as RootActionMove;
 
   t.is(result.things[0].number, 1);
   t.deepEqual(result.things[0].thing, { cardName: 'earlofstone' });

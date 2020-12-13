@@ -1,4 +1,4 @@
-import { ActionClearPath, ActionCombat, ActionCraft, ActionDominance, ActionGainVP, ActionMove, ActionReveal, ActionTriggerPlot, ActionUpdateFunds, RootCard, RootCardName, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootPieceType, RootLocation, RootSuit, Thing, RootVagabondRelationshipStatus } from './interfaces';
+import { RootActionClearPath, RootActionCombat, RootActionCraft, RootActionDominance, RootActionGainVP, RootActionMove, RootActionReveal, RootActionTriggerPlot, RootActionUpdateFunds, RootCard, RootCardName, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootPieceType, RootLocation, RootSuit, RootThing, RootVagabondRelationshipStatus } from './interfaces';
 import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
 import { splitAction } from './utils/action-splitter';
 import { extendCardName } from './utils/card-name-utils';
@@ -39,7 +39,7 @@ const CARD_REGEX_STRING = `^[${ALL_SUITS}]?#[@a-z]*$`;
 const CARD_REGEX = new RegExp(CARD_REGEX_STRING);
 
 // parse a VP action, defaults to +1
-export function parseVP(action: string, currentFaction: RootFaction): ActionGainVP {
+export function parseVP(action: string, currentFaction: RootFaction): RootActionGainVP {
   const result = action.match(SCORE_VP_REGEX);
 
   return {
@@ -49,7 +49,7 @@ export function parseVP(action: string, currentFaction: RootFaction): ActionGain
 }
 
 // parse a VP reduction action, defaults to -1
-export function parseLoseVP(action: string, currentFaction: RootFaction): ActionGainVP {
+export function parseLoseVP(action: string, currentFaction: RootFaction): RootActionGainVP {
   const result = action.match(REDUCE_VP_REGEX);
 
   return {
@@ -59,7 +59,7 @@ export function parseLoseVP(action: string, currentFaction: RootFaction): Action
 }
 
 // parse a dominance/coalition action
-export function parseDominance(action: string, takingFaction: RootFaction): ActionDominance {
+export function parseDominance(action: string, takingFaction: RootFaction): RootActionDominance {
   const result = action.match(REMOVE_FACTION_MARKER_REGEX);
 
   const targetFactionBoard = result.groups.targetFactionBoard;
@@ -68,7 +68,7 @@ export function parseDominance(action: string, takingFaction: RootFaction): Acti
 }
 
 // parse a craft card or item
-export function parseCraft(action: string): ActionCraft {
+export function parseCraft(action: string): RootActionCraft {
   const result = action.match(CRAFT_REGEX);
 
   // craft an item
@@ -81,9 +81,9 @@ export function parseCraft(action: string): ActionCraft {
 }
 
 // parse a combat action
-export function parseCombat(action: string, takingFaction: RootFaction): ActionCombat {
+export function parseCombat(action: string, takingFaction: RootFaction): RootActionCombat {
   const result = action.match(COMBAT_REGEX);
-  const parsedAction: ActionCombat = {
+  const parsedAction: RootActionCombat = {
     attacker: (result.groups.attacker || takingFaction) as RootFaction,
     defender: result.groups.defender as RootFaction,
     clearing: +result.groups.battleClearing,
@@ -122,7 +122,7 @@ function parseLocation(location: string, takingFaction: RootFaction): RootLocati
 }
 
 // parse a move action
-export function parseMove(action: string, takingFaction: RootFaction): ActionMove {
+export function parseMove(action: string, takingFaction: RootFaction): RootActionMove {
 
   const actions = splitAction(action);
   const movingComponents = [];
@@ -152,7 +152,7 @@ export function parseMove(action: string, takingFaction: RootFaction): ActionMov
       number: number,
       thing: component,
       start: origin
-    } as Thing);
+    } as RootThing);
     destinations.push(parseLocation(result.groups.destination, takingFaction));
   }
 
@@ -177,7 +177,7 @@ export function parseCard(card: string): RootCard {
 }
 
 // parse a reveal action
-export function parseReveal(action: string, takingFaction: RootFaction): ActionReveal {
+export function parseReveal(action: string, takingFaction: RootFaction): RootActionReveal {
 
   const actions = splitAction(action);
   const subjectsRevealed = [];
@@ -206,7 +206,7 @@ export function parseReveal(action: string, takingFaction: RootFaction): ActionR
 }
 
 // parse a clear mountain path action
-export function parseClearMountainPath(action: string): ActionClearPath {
+export function parseClearMountainPath(action: string): RootActionClearPath {
 
   const result = action.match(CLEAR_MOUNTAIN_PATH_REGEX);
 
@@ -216,7 +216,7 @@ export function parseClearMountainPath(action: string): ActionClearPath {
 
 }
 
-export function parseUpdateRelationshipAction(action: string, takingFaction: RootFaction): ActionMove {
+export function parseUpdateRelationshipAction(action: string, takingFaction: RootFaction): RootActionMove {
 
   if (UPDATE_RELATIONSHIP_REGEX.test(action)) {
     const result = action.match(UPDATE_RELATIONSHIP_REGEX);
@@ -229,14 +229,14 @@ export function parseUpdateRelationshipAction(action: string, takingFaction: Roo
         number: 1,
         thing: { faction: relationshipFaction, pieceType: null },  // TODO: Probably adjust this?
         start: vagabondFaction // TODO: Make this the faction board?
-      } as Thing],
+      } as RootThing],
       destinations: [relationshipLevel as RootVagabondRelationshipStatus]
     };
   }
 
 }
 
-export function parseUpdateFundsAction(action: string): ActionUpdateFunds {
+export function parseUpdateFundsAction(action: string): RootActionUpdateFunds {
 
   if (UPDATE_FUNDS_REGEX.test(action)) {
     const result = action.match(UPDATE_FUNDS_REGEX);
@@ -248,7 +248,7 @@ export function parseUpdateFundsAction(action: string): ActionUpdateFunds {
 
 }
 
-export function parsePriceOfFailureAction(action: string): ActionMove {
+export function parsePriceOfFailureAction(action: string): RootActionMove {
 
   if (PRICE_OF_FAILURE_REGEX.test(action)) {
     const result = action.match(PRICE_OF_FAILURE_REGEX);
@@ -258,7 +258,7 @@ export function parsePriceOfFailureAction(action: string): ActionMove {
         number: 1,
         thing: { cardName: result.groups.lostMinister } as RootCard,
         start: {faction: RootFaction.Duchy} as RootFactionBoard
-      } as Thing],
+      } as RootThing],
       destinations: [null]
     };
   }
@@ -267,7 +267,7 @@ export function parsePriceOfFailureAction(action: string): ActionMove {
 
 }
 
-export function parsePlotAction(action: string): ActionTriggerPlot {
+export function parsePlotAction(action: string): RootActionTriggerPlot {
 
   if (EXPOSE_PLOT_REGEX.test(action)) {
     const result = action.match(EXPOSE_PLOT_REGEX);

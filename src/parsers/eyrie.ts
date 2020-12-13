@@ -1,5 +1,5 @@
 import { parseCard } from '../action-parser';
-import { Action, ActionMove, RootFaction } from '../interfaces';
+import { RootAction, RootActionMove, RootFaction } from '../interfaces';
 import { splitAction } from '../utils/action-splitter';
 import { formRegex } from '../utils/regex-former';
 
@@ -8,7 +8,7 @@ const CHOOSE_LEADER_REGEX = formRegex('#<Leader|||chosenLeader>->$');
 const ADD_TO_DECREE_REGEX = formRegex('[Number|||countAdded]<Card|||cardAdded>E-><Decree|||columnAdded>')
 
 
-export function parseAddToDecree(actions: string[]): ActionMove {
+export function parseAddToDecree(actions: string[]): RootActionMove {
 
   const movingComponents = [];
   const destinations = [];
@@ -33,7 +33,7 @@ export function parseAddToDecree(actions: string[]): ActionMove {
 
 }
 
-export function parseEyrieAction(action: string): Action {
+export function parseEyrieAction(action: string): RootAction {
 
   if (CHOOSE_LEADER_REGEX.test(action)) {
     const result = action.match(CHOOSE_LEADER_REGEX);

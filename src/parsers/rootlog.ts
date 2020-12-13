@@ -7,7 +7,12 @@ export function parseRootlog(rootlog: string): RootGame {
     players: {},
 
     // default clearings are the default fall map layout
-    clearings: ['F', 'M', 'B', 'B', 'B', 'F', 'M', 'F', 'M', 'B', 'M', 'F'] as RootSuit[]
+    clearings: [
+      RootSuit.Fox, RootSuit.Mouse, RootSuit.Rabbit,
+      RootSuit.Rabbit, RootSuit.Rabbit, RootSuit.Fox,
+      RootSuit.Mouse, RootSuit.Fox, RootSuit.Mouse,
+      RootSuit.Rabbit, RootSuit.Mouse, RootSuit.Fox
+    ] as RootSuit[]
   };
 
   rootlog.split('\n').forEach((line) => {

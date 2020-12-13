@@ -1,4 +1,4 @@
-import { Action } from './actions';
+import { RootAction } from './actions';
 
 export enum RootMap {
   Fall = 'Fall',
@@ -289,7 +289,7 @@ export interface RootCard {
 
 export interface RootTurn {
   taker: RootFaction;
-  actions: Action[];
+  actions: RootAction[];
 }
 
 export interface RootGame {

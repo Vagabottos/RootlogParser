@@ -1,10 +1,10 @@
-import { Action, ActionSetPrices, RootRiverfolkPriceSpecial } from '../interfaces';
+import { RootAction, RootActionSetPrices, RootRiverfolkPriceSpecial } from '../interfaces';
 import { splitAction } from '../utils/action-splitter';
 import { formRegex } from '../utils/regex-former';
 
 const SET_PRICE_REGEX = formRegex('$_[PriceType|||priceType]-><Price|||newPrice>');
 
-export function parseSetPrices(actions: string[]): ActionSetPrices {
+export function parseSetPrices(actions: string[]): RootActionSetPrices {
 
   const pricesSet = [];
   let newPrice;
@@ -26,7 +26,7 @@ export function parseSetPrices(actions: string[]): ActionSetPrices {
 
 }
 
-export function parseRiverfolkAction(action: string): Action {
+export function parseRiverfolkAction(action: string): RootAction {
 
   const simpleActions = splitAction(action);
 
