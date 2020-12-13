@@ -1,5 +1,5 @@
-import { Action } from '../interfaces';
+import { RootAction } from '../interfaces';
 
-export function parseMarquiseAction(action: string): Action {
+export function parseMarquiseAction(action: string): RootAction {
   return null;
 }

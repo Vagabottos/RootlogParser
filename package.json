@@ -1,6 +1,6 @@
 {
   "name": "@seiyria/rootlog-parser",
-  "version": "1.0.0",
+  "version": "1.0.6",
   "description": "A parser to parse Rootlog games.",
   "main": "./dist/index.js",
   "typings": "./dist/src/index.d.ts",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Vagabotto/RootlogParser.git"
+    "url": "git+https://github.com/Vagabottos/RootlogParser.git"
   },
   "keywords": [
     "root",
@@ -25,9 +25,9 @@
   "author": "Kyle Kemp <kyle@seiyria.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Vagabotto/RootlogParser/issues"
+    "url": "https://github.com/Vagabottos/RootlogParser/issues"
   },
-  "homepage": "https://github.com/Vagabotto/RootlogParser#readme",
+  "homepage": "https://github.com/Vagabottos/RootlogParser#readme",
   "devDependencies": {
     "@types/node": "^9.4.6",
     "ava-ts": "^0.24.2",

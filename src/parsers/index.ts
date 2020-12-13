@@ -8,3 +8,5 @@ export * from './metadata';
 export * from './riverfolk';
 export * from './vagabond';
 export * from './woodland';
+
+export * from './rootlog';

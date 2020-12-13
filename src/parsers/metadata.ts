@@ -1,5 +1,5 @@
 import { parseAction } from '../action-parser';
-import { Deck, Faction, Map, Suit, Turn } from '../interfaces';
+import { RootDeck, RootFaction, RootMap, RootSuit, RootTurn } from '../interfaces';
 
 
 function cleanText(str: string = ''): string {
@@ -7,10 +7,10 @@ function cleanText(str: string = ''): string {
 }
 
 // map line format: Map: <text>
-export function parseMap(line: string): Map {
-  const map = cleanText(line.split('Map:')[1]) as Map;
+export function parseMap(line: string): RootMap {
+  const map = cleanText(line.split('Map:')[1]) as RootMap;
 
-  if (!Object.values(Map).includes(map)) {
+  if (!Object.values(RootMap).includes(map)) {
     throw `Map ${map} doesn't exist.`;
   }
 
@@ -18,10 +18,10 @@ export function parseMap(line: string): Map {
 }
 
 // deck line format: Deck: <text>
-export function parseDeck(line: string): Deck {
-  const deck = cleanText(line.split('Deck:')[1]) as Deck;
+export function parseDeck(line: string): RootDeck {
+  const deck = cleanText(line.split('Deck:')[1]) as RootDeck;
 
-  if (!Object.values(Deck).includes(deck)) {
+  if (!Object.values(RootDeck).includes(deck)) {
     throw `Deck ${deck} doesn't exist.`;
   }
 
@@ -29,11 +29,11 @@ export function parseDeck(line: string): Deck {
 }
 
 // winner line format: Winner: <factions...>
-export function parseWinner(line: string): Faction[] {
-  const winners = cleanText(line.split('Winner:')[1]).split('') as Faction[];
+export function parseWinner(line: string): RootFaction[] {
+  const winners = cleanText(line.split('Winner:')[1]).split('') as RootFaction[];
 
   for (let winner of winners) {
-    if (!Object.values(Faction).includes(winner)) {
+    if (!Object.values(RootFaction).includes(winner)) {
       throw `Winner contains invalid Faction ${winner}.`;
     }
   }
@@ -42,11 +42,11 @@ export function parseWinner(line: string): Faction[] {
 }
 
 // pool line format: Pool: <factions...>
-export function parsePool(line: string): Faction[] {
-  const pool = cleanText(line.split('Pool:')[1]).split('') as Faction[];
+export function parsePool(line: string): RootFaction[] {
+  const pool = cleanText(line.split('Pool:')[1]).split('') as RootFaction[];
 
   for (let faction of pool) {
-    if (!Object.values(Faction).includes(faction)) {
+    if (!Object.values(RootFaction).includes(faction)) {
       throw `Faction pool contains invalid Faction ${faction}.`;
     }
   }
@@ -61,37 +61,37 @@ export function parsePlayer(line: string): string {
 }
 
 // clearing line format: Clearings: <suit>X, <suit>Y (x/y = clearing num, 1-indexed)
-export function parseClearings(line: string): Suit[] {
+export function parseClearings(line: string): RootSuit[] {
   const suitClearing = [];
 
   line.split('Clearings:')[1].split(',').map(x => x.trim()).forEach((suitWithClearing, index) => {
-    const suit = suitWithClearing.substring(0, 1) as Suit;
+    const suit = suitWithClearing.substring(0, 1) as RootSuit;
     let clearingNumber = +suitWithClearing.substring(1);
     
     if(isNaN(clearingNumber)) {
       clearingNumber = index + 1;
     }
 
-    if (suit === Suit.Bird) {
+    if (suit === RootSuit.Bird) {
       throw `"Bird" is not a valid clearing suit for clearing ${clearingNumber}.`
-    } else if (suit !== Suit.Fox && suit !== Suit.Mouse && suit !== Suit.Rabbit) {
+    } else if (suit !== RootSuit.Fox && suit !== RootSuit.Mouse && suit !== RootSuit.Rabbit) {
       throw `Clearing ${clearingNumber} has an invalid suit: ${suit}.`;
     }
     
-    suitClearing[clearingNumber - 1] = suit as Suit;
+    suitClearing[clearingNumber - 1] = suit as RootSuit;
   })
 
   return suitClearing;
 }
 
 // parse out a turn, anything with a single character followed by the colon
-export function parseTurn(line: string): Turn {
-  const turn: Partial<Turn> = {
+export function parseTurn(line: string): RootTurn {
+  const turn: Partial<RootTurn> = {
     actions: []
   };
 
   const [taker, unparsedActions] = line.split(':');
-  turn.taker = taker as Faction;
+  turn.taker = taker as RootFaction;
 
   unparsedActions.split(/[\/;]/).forEach(action => {
     const actionObj = parseAction(action, turn.taker) || {raw: action};
@@ -99,5 +99,5 @@ export function parseTurn(line: string): Turn {
     turn.actions.push(actionObj);
   });
 
-  return turn as Turn;
+  return turn as RootTurn;
 }

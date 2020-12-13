@@ -1,11 +1,11 @@
 import test from 'ava-ts';
 
 import { parseAction, parseCombat } from '../src/action-parser';
-import { Faction } from '../src/interfaces/rootgame';
+import { RootFaction } from '../src/interfaces/rootgame';
 
 test('Combat action parses all parts correctly together', t => {
 
-  const result = parseAction('CXE8F@B@', 'V' as Faction); // That dastardly Vagrant...
+  const result = parseAction('CXE8F@B@', 'V' as RootFaction); // That dastardly Vagrant...
 
   t.is(result.attacker, 'C');
   t.is(result.defender, 'E');
@@ -16,7 +16,7 @@ test('Combat action parses all parts correctly together', t => {
 
 test('Combat action parses all parts correctly together without ambushes', t => {
 
-  const result = parseAction('CXE8', 'V' as Faction); // That dastardly Vagrant...
+  const result = parseAction('CXE8', 'V' as RootFaction); // That dastardly Vagrant...
 
   t.is(result.attacker, 'C');
   t.is(result.defender, 'E');
@@ -27,7 +27,7 @@ test('Combat action parses all parts correctly together without ambushes', t => 
 
 test('Combat action parses default attacker correctly', t => {
 
-  const result = parseAction('XA12', 'O' as Faction);
+  const result = parseAction('XA12', 'O' as RootFaction);
 
   t.is(result.attacker, 'O');
   t.is(result.defender, 'A');
@@ -36,7 +36,7 @@ test('Combat action parses default attacker correctly', t => {
 
 test('Combat action parses ambushes correctly with default attacker', t => {
 
-  const result = parseAction('XA11B@M@', 'E' as Faction);
+  const result = parseAction('XA11B@M@', 'E' as RootFaction);
 
   t.is(result.attacker, 'E');
   t.is(result.defender, 'A');
@@ -47,7 +47,7 @@ test('Combat action parses ambushes correctly with default attacker', t => {
 
 test('Combat action parses ambushes without foil ambush correctly', t => {
 
-  const result = parseAction('XA11R@', 'E' as Faction);
+  const result = parseAction('XA11R@', 'E' as RootFaction);
 
   t.is(result.attacker, 'E');
   t.is(result.defender, 'A');

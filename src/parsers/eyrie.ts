@@ -1,5 +1,5 @@
 import { parseCard } from '../action-parser';
-import { Action, ActionMove, Faction } from '../interfaces';
+import { RootAction, RootActionMove, RootFaction } from '../interfaces';
 import { splitAction } from '../utils/action-splitter';
 import { formRegex } from '../utils/regex-former';
 
@@ -8,7 +8,7 @@ const CHOOSE_LEADER_REGEX = formRegex('#<Leader|||chosenLeader>->$');
 const ADD_TO_DECREE_REGEX = formRegex('[Number|||countAdded]<Card|||cardAdded>E-><Decree|||columnAdded>')
 
 
-export function parseAddToDecree(actions: string[]): ActionMove {
+export function parseAddToDecree(actions: string[]): RootActionMove {
 
   const movingComponents = [];
   const destinations = [];
@@ -18,7 +18,7 @@ export function parseAddToDecree(actions: string[]): ActionMove {
     const component = {
       number: +(result.groups.countAdded || 1),
       thing: parseCard(result.groups.cardAdded),
-      start: Faction.Eyrie  // TODO: Faction Board, not faction
+      start: RootFaction.Eyrie  // TODO: Faction Board, not faction
     };
     const destination = null;  // TODO: Destination is decree - add that as a location
 
@@ -33,7 +33,7 @@ export function parseAddToDecree(actions: string[]): ActionMove {
 
 }
 
-export function parseEyrieAction(action: string): Action {
+export function parseEyrieAction(action: string): RootAction {
 
   if (CHOOSE_LEADER_REGEX.test(action)) {
     const result = action.match(CHOOSE_LEADER_REGEX);
@@ -44,7 +44,7 @@ export function parseEyrieAction(action: string): Action {
         thing: { cardName: result.groups.chosenLeader },
         start: null  // TODO: Genuinely null? No idea if this should be set to anything else
       }],
-      destinations: [Faction.Eyrie]  // TODO: Faction Board, not faction
+      destinations: [RootFaction.Eyrie]  // TODO: Faction Board, not faction
     };
   }
 
