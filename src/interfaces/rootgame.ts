@@ -1,8 +1,16 @@
 import { Action } from './actions';
 
-export type RootMap = 'Fall' | 'Winter' | 'Lake' | 'Mountain';
+export enum RootMap {
+  Fall = 'Fall',
+  Winter = 'Winter',
+  Lake = 'Lake',
+  Mountain = 'Mountain'
+}
 
-export type RootDeck = 'Standard' | 'E&P';
+export enum RootDeck {
+  Standard = 'Standard',
+  Exiles = 'E&P'
+}
 
 export enum RootSuit {
   Bird = 'B',
