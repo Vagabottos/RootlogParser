@@ -1,11 +1,12 @@
 import test from 'ava-ts';
+import { parseAction } from '../src/action-parser';
 
 import { ActionMove, Faction, Suit } from '../src/interfaces';
 import { parseAddToDecree, parseEyrieAction } from '../src/parsers';
 
 test('Correctly parses an array of actions to add a card to the Decree', t => {
 
-  const result = parseAddToDecree(['R#E->$_r']);
+  const result = parseAction('R#E->$_r', Faction.Eyrie);
 
   t.deepEqual(result.things, [{
     number: 1,
@@ -17,7 +18,7 @@ test('Correctly parses an array of actions to add a card to the Decree', t => {
 
 test('Correctly parses an array of actions to add two cards to the Decree', t => {
 
-  const result = parseAddToDecree(['2R#E->$_x']);
+  const result = parseAction('2R#E->$_x', Faction.Eyrie);
 
   t.deepEqual(result.things, [{
     number: 2,
@@ -29,7 +30,7 @@ test('Correctly parses an array of actions to add two cards to the Decree', t =>
 
 test('Correctly parses an array of actions to add two cards of different suits to the Decree', t => {
 
-  const result = parseAddToDecree(['R#E->$_x', 'B#E->$_x']);
+  const result = parseAction('(R+B)#E->$_x', Faction.Eyrie);
 
   t.deepEqual(result.things, [{
     number: 1,
@@ -46,7 +47,7 @@ test('Correctly parses an array of actions to add two cards of different suits t
 
 test('Correctly parses a string of actions to add a card to the Decree', t => {
 
-  const result = parseEyrieAction('R#E->$_r') as ActionMove;
+  const result = parseAction('R#E->$_r', Faction.Eyrie) as ActionMove;
 
   t.deepEqual(result.things, [{
     number: 1,
@@ -58,7 +59,7 @@ test('Correctly parses a string of actions to add a card to the Decree', t => {
 
 test('Correctly parses a string of actions to add two cards to the Decree', t => {
 
-  const result = parseEyrieAction('2R#E->$_x') as ActionMove;
+  const result = parseAction('2R#E->$_x', Faction.Eyrie) as ActionMove;
 
   t.deepEqual(result.things, [{
     number: 2,
@@ -70,7 +71,7 @@ test('Correctly parses a string of actions to add two cards to the Decree', t =>
 
 test('Correctly parses a string of actions to add two cards of different suits to the Decree', t => {
 
-  const result = parseEyrieAction('(R+B)#E->$_x') as ActionMove;
+  const result = parseAction('(R+B)#E->$_x', Faction.Eyrie) as ActionMove;
 
   t.deepEqual(result.things, [{
     number: 1,
@@ -87,7 +88,7 @@ test('Correctly parses a string of actions to add two cards of different suits t
 
 test('Correctly parses an action to purge the Decree', t => {
 
-  const result = parseEyrieAction('$_->') as ActionMove;
+  const result = parseAction('$_->', Faction.Eyrie) as ActionMove;
 
   t.deepEqual(result.things, []);  // TODO: Implement in code
   t.deepEqual(result.destinations, []);
@@ -95,7 +96,7 @@ test('Correctly parses an action to purge the Decree', t => {
 
 test('Correctly parses an action to choose a Leader', t => {
 
-  const result = parseEyrieAction('#commander->$') as ActionMove;
+  const result = parseAction('#commander->$', Faction.Eyrie) as ActionMove;
 
   t.deepEqual(result.things, [{
     number: 1,

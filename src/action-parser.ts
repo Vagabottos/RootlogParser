@@ -22,7 +22,7 @@ const UPDATE_RELATIONSHIP_REGEX = formRegex('[Faction|||vagabondFaction]$_<Facti
 const UPDATE_FUNDS_REGEX = formRegex('$_f-><Number|||fundsRemaining>');
 const EXPOSE_PLOT_REGEX = formRegex('?P<Piece|||plotGuessed><Clearing|||plotClearing>');
 const FLIP_RAID_PLOT_REGEX = formRegex('Pt<Clearing|||plotClearing>^t_r');
-const PRICE_OF_FAILURE_REGEX = formRegex('#<Minister|||lostMinister>D$->');
+const PRICE_OF_FAILURE_REGEX = formRegex('#<Minister|||lostMinister>[D]$->');
 
 // export const MOVE_REGEX = formRegex('[Number|||countMoved]<Component|||componentMoved>[Location|||origin]->[Location|||destination]');
 
@@ -104,10 +104,10 @@ function parseLocation(location: string, takingFaction: Faction): RootLocation {
   } else if (FACTION_BOARD_REGEX.test(location)) {
     const [_, faction] = location.match(FACTION_BOARD_REGEX);
     return {
-      faction: faction || takingFaction  // TODO: This causes ambiguity between sending a card to a faction's hand VS board
-                                         // Should we add a dummy variable to FactionBoard interface to distinguish them?
+      faction: faction || takingFaction
     } as FactionBoard;
   } else if (Object.values(Faction).includes(location as Faction)) {
+    // RETURN FACTION HAND
     return location as Faction;
   } else if (Object.values(ItemState).includes(location as ItemState)) {
     return location as ItemState;
@@ -257,7 +257,7 @@ export function parsePriceOfFailureAction(action: string): ActionMove {
       things: [{
         number: 1,
         thing: { cardName: result.groups.lostMinister } as Card,
-        start: Faction.Duchy  // TODO: Faction Board, not faction
+        start: {faction: Faction.Duchy} as FactionBoard
       } as Thing],
       destinations: [null]
     };
@@ -347,22 +347,8 @@ export function parseAction(action: string, faction: Faction): any {
     return parseCraft(action);
   }
 
-  if(action.includes('->')) {
-    if (action.includes('<->')) {
-      // TODO: Parse Corvid Trick action.
-    } else if (action.startsWith('$_')) {
-      // TODO: Parse special faction board actions.
-    } else {
-      return parseMove(action, faction);
-    }
-  }
-
   if(COMBAT_REGEX.test(action)) {
     return parseCombat(action, faction);
-  }
-
-  if(action.includes('^')) {
-    return parseReveal(action, faction);
   }
 
   if(CLEAR_MOUNTAIN_PATH_REGEX.test(action)) {
@@ -383,6 +369,10 @@ export function parseAction(action: string, faction: Faction): any {
 
   if(EXPOSE_PLOT_REGEX.test(action) || FLIP_RAID_PLOT_REGEX.test(action)) {
     return parsePlotAction(action);
+  }
+
+  if(action.includes('^')) {
+    return parseReveal(action, faction);
   }
 
   if(action.includes('->')) {

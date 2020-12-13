@@ -1,11 +1,11 @@
 import test from 'ava-ts';
 
-import { parseMove } from '../src/action-parser';
+import { parseAction } from '../src/action-parser';
 import { Card, Faction, FactionBoard, Item, ItemState, Piece, RootLocation } from '../src/interfaces/rootgame';
 
 test('Move - place one of current player\'s warriors', t => {
 
-  const result = parseMove('w->10', 'C' as Faction);
+  const result = parseAction('w->10', 'C' as Faction);
 
   t.is(result.things[0].number, 1);
 
@@ -19,7 +19,7 @@ test('Move - place one of current player\'s warriors', t => {
 
 test('Move - remove one of current player\'s warriors', t => {
 
-  const result = parseMove('w10->', 'C' as Faction);
+  const result = parseAction('w10->', 'C' as Faction);
 
   t.is(result.things[0].number, 1);
 
@@ -33,7 +33,7 @@ test('Move - remove one of current player\'s warriors', t => {
 
 test('Move - move one of current player\'s warriors', t => {
 
-  const result = parseMove('w6->8', 'D' as Faction);
+  const result = parseAction('w6->8', 'D' as Faction);
 
   t.is(result.things[0].number, 1);
 
@@ -47,7 +47,7 @@ test('Move - move one of current player\'s warriors', t => {
 
 test('Move - move two of current player\'s warriors, separately', t => {
 
-  const result = parseMove('w6+w4->8', 'C' as Faction);
+  const result = parseAction('w6+w4->8', 'C' as Faction);
 
   t.is(result.things[0].number, 1);
   t.is((result.things[0].thing as Piece).faction, 'C');
@@ -64,7 +64,7 @@ test('Move - move two of current player\'s warriors, separately', t => {
 
 test('Move - move two of current player\'s warriors, together', t => {
 
-  const result = parseMove('2w5->8', 'C' as Faction);
+  const result = parseAction('2w5->8', 'C' as Faction);
 
   t.is(result.things[0].number, 2);
   t.is((result.things[0].thing as Piece).faction, 'C');
@@ -76,7 +76,7 @@ test('Move - move two of current player\'s warriors, together', t => {
 
 test('Move - place four of current player\'s warriors in separate clearings', t => {
 
-  const result = parseMove('w->8+11+6+5', 'P' as Faction);
+  const result = parseAction('w->8+11+6+5', 'P' as Faction);
 
   t.is(result.things[0].number, 1);
   t.is((result.things[0].thing as Piece).faction, 'P');
@@ -91,7 +91,7 @@ test('Move - place four of current player\'s warriors in separate clearings', t 
 
 test('Move - remove four of current player\'s tokens in separate clearings', t => {
 
-  const result = parseMove('t8+t11+t6+t5->', 'C' as Faction);
+  const result = parseAction('t8+t11+t6+t5->', 'C' as Faction);
 
   t.is(result.things[0].number, 1);
   t.is((result.things[0].thing as Piece).faction, 'C');
@@ -118,7 +118,7 @@ test('Move - remove four of current player\'s tokens in separate clearings', t =
 
 test('Move - place current player\'s warriors on faction board', t => {
 
-  const result = parseMove('w->$', 'A' as Faction);
+  const result = parseAction('w->$', 'A' as Faction);
 
   t.is(result.things[0].number, 1);
   t.is((result.things[0].thing as Piece).faction, 'A');
@@ -130,7 +130,7 @@ test('Move - place current player\'s warriors on faction board', t => {
 
 test('Move - place current player\'s warriors on faction board', t => {
 
-  const result = parseMove('w$->', 'L' as Faction);
+  const result = parseAction('w$->', 'L' as Faction);
 
   t.is(result.things[0].number, 1);
   t.is((result.things[0].thing as Piece).faction, 'L');
@@ -142,7 +142,7 @@ test('Move - place current player\'s warriors on faction board', t => {
 
 test('Move - place cards onto Woodland Alliance\'s faction board', t => {
 
-  const result = parseMove('2R#C->A$', 'C' as Faction);
+  const result = parseAction('2R#C->A$', 'C' as Faction);
 
   t.is(result.things[0].number, 2);
   t.is((result.things[0].thing as Card).suit, 'R');
@@ -153,7 +153,7 @@ test('Move - place cards onto Woodland Alliance\'s faction board', t => {
 
 test('Move - exhaust sword', t => {
 
-  const result = parseMove('%s->e', 'O' as Faction);
+  const result = parseAction('%s->e', 'O' as Faction);
 
   t.is(result.things[0].number, 1);
   t.is(result.things[0].thing as Item, 's');
@@ -164,7 +164,7 @@ test('Move - exhaust sword', t => {
 
 test('Move - refresh sword', t => {
 
-  const result = parseMove('%s->r', 'V' as Faction);
+  const result = parseAction('%s->r', 'V' as Faction);
 
   t.is(result.things[0].number, 1);
   t.is(result.things[0].thing as Item, 's');
@@ -175,7 +175,7 @@ test('Move - refresh sword', t => {
 
 test('Move - remove sword', t => {
 
-  const result = parseMove('%s->', 'V' as Faction);
+  const result = parseAction('%s->', 'V' as Faction);
 
   t.is(result.things[0].number, 1);
   t.is(result.things[0].thing as Item, 's');
@@ -186,7 +186,7 @@ test('Move - remove sword', t => {
 
 test('Move - retrieve from Discard pile', t => {
 
-  const result = parseMove('R#@*->P', 'P' as Faction);
+  const result = parseAction('R#@*->P', 'P' as Faction);
 
   t.is(result.things[0].number, 1);
   t.is((result.things[0].thing as Card).cardName, 'Ambush');
