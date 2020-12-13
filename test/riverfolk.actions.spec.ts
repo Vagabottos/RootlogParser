@@ -1,35 +1,26 @@
 import test from 'ava-ts';
 
-import { parseUpdateFundsAction } from '../src/action-parser';
-import { ActionSetPrices } from '../src/interfaces';
-import { parseRiverfolkAction, parseSetPrices } from '../src/parsers';
+import { parseAction } from '../src/action-parser';
+import { ActionSetPrices, Faction } from '../src/interfaces';
 
 test('Correctly parses an action to update funds', t => {
 
-  const result = parseUpdateFundsAction('$_f->0');
+  const result = parseAction('$_f->0', Faction.Eyrie);
 
   t.is(result.funds, 0);
 });
 
 test('Correctly parses an array of actions to set the Riverfolk price for a service', t => {
 
-  const result = parseSetPrices(['$_m->4']);
+  const result = parseAction('$_m->4', Faction.Riverfolk);
 
   t.deepEqual(result.priceTypes, ['m']);
   t.is(result.price, 4);
 });
 
-test('Correctly parses an array of actions to set the Riverfolk prices for multiple service', t => {
+test('Correctly parses actions to set the Riverfolk prices using default values', t => {
 
-  const result = parseSetPrices(['$_m->4', '$_h->4']);
-
-  t.deepEqual(result.priceTypes, ['m', 'h']);
-  t.is(result.price, 4);
-});
-
-test('Correctly parses an array of actions to set the Riverfolk prices using default values', t => {
-
-  const result = parseSetPrices(['$_->1']);
+  const result = parseAction('$_->1', Faction.Riverfolk);
 
   t.deepEqual(result.priceTypes, ['h', 'r', 'm']);
   t.is(result.price, 1);
@@ -37,7 +28,7 @@ test('Correctly parses an array of actions to set the Riverfolk prices using def
 
 test('Correctly parses a single action to set the Riverfolk price for a service', t => {
 
-  const result = parseRiverfolkAction('$_m->4') as ActionSetPrices;
+  const result = parseAction('$_m->4', Faction.Riverfolk) as ActionSetPrices;
 
   t.deepEqual(result.priceTypes, ['m']);
   t.is(result.price, 4);
@@ -45,7 +36,7 @@ test('Correctly parses a single action to set the Riverfolk price for a service'
 
 test('Correctly parses a single action to set the Riverfolk prices for multiple service', t => {
 
-  const result = parseRiverfolkAction('$_m+$_h->4') as ActionSetPrices;
+  const result = parseAction('$_m+$_h->4', Faction.Riverfolk) as ActionSetPrices;
 
   t.deepEqual(result.priceTypes, ['m', 'h']);
   t.is(result.price, 4);
@@ -53,7 +44,7 @@ test('Correctly parses a single action to set the Riverfolk prices for multiple 
 
 test('Correctly parses a single action to set the Riverfolk prices using default values', t => {
 
-  const result = parseRiverfolkAction('$_->1') as ActionSetPrices;
+  const result = parseAction('$_->1', Faction.Riverfolk) as ActionSetPrices;
 
   t.deepEqual(result.priceTypes, ['h', 'r', 'm']);
   t.is(result.price, 1);

@@ -1,11 +1,11 @@
 import test from 'ava-ts';
 
-import { ActionMove, Faction, Suit } from '../src/interfaces';
-import { parseVagabondAction } from '../src/parsers';
+import { ActionMove, Faction } from '../src/interfaces';
+import { parseAction } from '../src/action-parser';
 
 test('Correctly parses an action to choose a Character', t => {
 
-  const result = parseVagabondAction('#tinker->$', 'V' as Faction) as ActionMove;
+  const result = parseAction('#tinker->$', 'V' as Faction) as ActionMove;
 
   t.deepEqual(result.things, [{
     number: 1,
@@ -17,7 +17,7 @@ test('Correctly parses an action to choose a Character', t => {
 
 test('Correctly parses an action to restore all items', t => {
 
-  const result = parseVagabondAction('$_d->s', 'V' as Faction) as ActionMove;
+  const result = parseAction('$_d->s', 'V' as Faction) as ActionMove;
 
   t.deepEqual(result.things, []);  // TODO: Implement in code
   t.deepEqual(result.destinations, []);  // TODO: Implement in code

@@ -1,11 +1,11 @@
 import test from 'ava-ts';
 
-import { parseReveal } from '../src/action-parser';
+import { parseAction } from '../src/action-parser';
 import { Faction } from '../src/interfaces/rootgame';
 
 test('Reveal action is parsed correctly when left side is combined and grouped', t => {
 
-  const result = parseReveal('(2R+F)#^P', 'C' as Faction);
+  const result = parseAction('(2R+F)#^P', 'C' as Faction);
 
   t.is(result.subjects[0].number, 2);
   t.is(result.subjects[0].card.suit, 'R');
@@ -20,7 +20,7 @@ test('Reveal action is parsed correctly when left side is combined and grouped',
 
 test('Reveal action is parsed correctly when left side is combined and grouped', t => {
 
-  const result = parseReveal('2R#D+F#D^A', 'C' as Faction);
+  const result = parseAction('2R#D+F#D^A', 'C' as Faction);
 
   t.is(result.subjects[0].number, 2);
   t.is(result.subjects[0].card.suit, 'R');
@@ -35,7 +35,7 @@ test('Reveal action is parsed correctly when left side is combined and grouped',
 
 test('Reveal action is parsed correctly when right side is combined', t => {
 
-  const result = parseReveal('R#^A+C', 'D' as Faction);
+  const result = parseAction('R#^A+C', 'D' as Faction);
 
   t.is(result.subjects[0].number, 1);
   t.is(result.subjects[0].card.suit, 'R');
@@ -47,7 +47,7 @@ test('Reveal action is parsed correctly when right side is combined', t => {
 
 test('Reveal action is parsed correctly when full', t => {
 
-  const result = parseReveal('2R#D^O', 'C' as Faction);
+  const result = parseAction('2R#D^O', 'C' as Faction);
 
   t.is(result.subjects[0].revealer, 'D');
   t.is(result.subjects[0].number, 2);
@@ -57,7 +57,7 @@ test('Reveal action is parsed correctly when full', t => {
 
 test('Reveal specific card to whole table', t => {
 
-  const result = parseReveal('R#dom^', 'C' as Faction);
+  const result = parseAction('R#dom^', 'C' as Faction);
 
   t.is(result.subjects[0].number, 1);
   t.is(result.subjects[0].card.suit, 'R');
@@ -69,7 +69,7 @@ test('Reveal specific card to whole table', t => {
 
 test('Reveal someone else\'s one card to whole table', t => {
 
-  const result = parseReveal('R#A^', 'C' as Faction);
+  const result = parseAction('R#A^', 'C' as Faction);
 
   t.is(result.subjects[0].number, 1);
   t.is(result.subjects[0].card.suit, 'R');
@@ -81,7 +81,7 @@ test('Reveal someone else\'s one card to whole table', t => {
 
 test('Reveal someone else\'s hand to whole table', t => {
 
-  const result = parseReveal('A^', 'C' as Faction);
+  const result = parseAction('A^', 'C' as Faction);
 
   t.is(result.subjects[0].number, null);
   t.is(result.subjects[0].card, null);
@@ -92,7 +92,7 @@ test('Reveal someone else\'s hand to whole table', t => {
 
 test('Reveal whole hand to one faction', t => {
 
-  const result = parseReveal('^A', 'C' as Faction);
+  const result = parseAction('^A', 'C' as Faction);
 
   t.is(result.subjects[0].number, null);
   t.is(result.subjects[0].card, null);
@@ -103,7 +103,7 @@ test('Reveal whole hand to one faction', t => {
 
 test('Reveal action uses correct default values when empty', t => {
 
-  const result = parseReveal('^', 'A' as Faction);
+  const result = parseAction('^', 'A' as Faction);
 
   t.is(result.subjects[0].number, null);
   t.is(result.subjects[0].card, null);
