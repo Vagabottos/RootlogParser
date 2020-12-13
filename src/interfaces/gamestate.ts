@@ -1,5 +1,5 @@
 
-import { Faction } from './rootgame';
+import { RootFaction } from './rootgame';
 
 /*
 TODO: 
@@ -8,5 +8,5 @@ TODO:
 */
 
 export interface GameState {
-  vp: Record<Faction, number>;
+  vp: Record<RootFaction, number>;
 }

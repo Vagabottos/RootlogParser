@@ -1,74 +1,74 @@
-import { Card, CardName, Faction, Item, Piece, RootLocation, Suit } from './rootgame';
+import { RootCard, RootCardName, RootFaction, RootItem, RootPiece, RootLocation, RootSuit } from './rootgame';
 
-export type Action = ActionGainVP | ActionCraft | ActionMove | ActionDominance | ActionCombat | ActionReveal | ActionClearPath | ActionSetOutcast | ActionSetPrices | ActionUpdateFunds | ActionTriggerPlot | ActionSwapPlots;
+export type RootAction = RootActionGainVP | RootActionCraft | RootActionMove | RootActionDominance | RootActionCombat | RootActionReveal | RootActionClearPath | RootActionSetOutcast | RootActionSetPrices | RootActionUpdateFunds | RootActionTriggerPlot | RootActionSwapPlots;
 
-export interface ActionGainVP {
+export interface RootActionGainVP {
   vp: number;
-  faction: Faction;
+  faction: RootFaction;
 }
 
-export interface ActionCraft {
-  craftItem?: Item;
-  craftCard?: CardName;
+export interface RootActionCraft {
+  craftItem?: RootItem;
+  craftCard?: RootCardName;
 }
 
-export interface ActionCombat {
-  attacker: Faction;
-  defender: Faction;
+export interface RootActionCombat {
+  attacker: RootFaction;
+  defender: RootFaction;
   clearing: number;
-  ambush?: Suit;
-  foilAmbush?: Suit;
+  ambush?: RootSuit;
+  foilAmbush?: RootSuit;
 }
 
-export interface Thing {
+export interface RootThing {
   number: number;
-  thing: Card | Item | Piece;
+  thing: RootCard | RootItem | RootPiece;
   start: RootLocation;
 }
 
-export interface ActionMove {
-  things: Thing[];
+export interface RootActionMove {
+  things: RootThing[];
   destinations: RootLocation[];
 }
 
-export interface ActionDominance {
-  target: Faction;
+export interface RootActionDominance {
+  target: RootFaction;
 }
 
 export interface SubjectReveal {
     number?: number,
-    card?: Card,
-    revealer: Faction
+    card?: RootCard,
+    revealer: RootFaction
 }
 
-export interface ActionReveal {
+export interface RootActionReveal {
   subjects: SubjectReveal[];
-  targets: Faction[];
+  targets: RootFaction[];
 }
 
-export interface ActionClearPath {
+export interface RootActionClearPath {
   clearings: number[];
 }
 
-export interface ActionSetOutcast {
+export interface RootActionSetOutcast {
   degree: string;  // TODO: Come up with a better name for this to distinguish between Outcast and Hated Outcast
-  suit: Suit;
+  suit: RootSuit;
 }
 
-export interface ActionSetPrices {
+export interface RootActionSetPrices {
   priceTypes: string[];
   price: number;
 }
 
-export interface ActionUpdateFunds {
+export interface RootActionUpdateFunds {
   funds: number;
 }
 
-export interface ActionTriggerPlot {
+export interface RootActionTriggerPlot {
   plot: string;
   clearing: number;
 }
 
-export interface ActionSwapPlots {
+export interface RootActionSwapPlots {
   clearings: number[];
 }

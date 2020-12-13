@@ -1,5 +1,5 @@
-import { Action } from '../interfaces';
+import { RootAction } from '../interfaces';
 
-export function parseWoodlandAction(action: string): Action {
+export function parseWoodlandAction(action: string): RootAction {
   return null;
 }

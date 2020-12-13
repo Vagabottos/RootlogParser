@@ -9,9 +9,14 @@
      "target": "es2018",
      "module": "commonjs",
      "moduleResolution": "node",
-     "outDir": "./build",
+     "outDir": "./dist",
      "emitDecoratorMetadata": true,
      "experimentalDecorators": true,
-     "sourceMap": true
+     "sourceMap": true,
+     "sourceRoot": "src",
+     "declaration": true,
+     "declarationMap": true,
+     "declarationDir": "dist",
+     "rootDir": "."
   }
 }

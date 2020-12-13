@@ -1,9 +1,9 @@
-import { Action, Faction, FactionBoard, Thing } from '../interfaces';
+import { RootAction, RootFaction, RootFactionBoard, RootThing } from '../interfaces';
 import { formRegex } from '../utils/regex-former';
 
 const SWAY_MINISTER_REGEX = formRegex('#<Minister|||swayedMinister>->$');
 
-export function parseDuchyAction(action: string): Action {
+export function parseDuchyAction(action: string): RootAction {
 
   if (SWAY_MINISTER_REGEX.test(action)) {
     const result = action.match(SWAY_MINISTER_REGEX);
@@ -13,8 +13,8 @@ export function parseDuchyAction(action: string): Action {
         number: 1,
         thing: { cardName: result.groups.swayedMinister },
         start: null
-      } as Thing],
-      destinations: [{faction: Faction.Duchy} as FactionBoard]
+      } as RootThing],
+      destinations: [{faction: RootFaction.Duchy} as RootFactionBoard]
     };
   }
 

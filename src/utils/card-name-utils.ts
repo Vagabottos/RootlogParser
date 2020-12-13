@@ -1,4 +1,4 @@
-import { CardName, Suit } from "../interfaces";
+import { RootCardName, RootSuit } from "../interfaces";
 
 const extendedCardNames = new Map([
   ['@', 'Ambush'],
@@ -41,15 +41,15 @@ const extendedCardNames = new Map([
   ['tun', 'tunnels']
 ]);
 
-export function extendCardName(cardName: CardName, suit: Suit): CardName {
+export function extendCardName(cardName: RootCardName, suit: RootSuit): RootCardName {
   if (cardName === 'favor') {
     if (suit === 'F') {
-      return 'favorofthefoxes' as CardName;
+      return 'favorofthefoxes' as RootCardName;
     } else if (suit === 'R') {
-      return 'favoroftherabbits' as CardName;
+      return 'favoroftherabbits' as RootCardName;
     } else if (suit === 'M') {
-      return 'favorofthemice' as CardName;
+      return 'favorofthemice' as RootCardName;
     }
   }
-   return (extendedCardNames.get(cardName) || cardName) as CardName;
+   return (extendedCardNames.get(cardName) || cardName) as RootCardName;
 }
