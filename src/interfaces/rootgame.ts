@@ -1,8 +1,16 @@
 import { Action } from './actions';
 
-export type Map = 'Fall' | 'Winter' | 'Lake' | 'Mountain';
+export enum Map {
+  Fall = 'Fall',
+  Winter = 'Winter',
+  Lake = 'Lake',
+  Mountain = 'Mountain'
+}
 
-export type Deck = 'Standard' | 'E&P';
+export enum Deck {
+  Standard = 'Standard',
+  ExilesAndPartisans = 'E&P'
+}
 
 export enum Suit {
   Bird = 'B',

@@ -3,7 +3,7 @@ import test from 'ava-ts';
 import { parseAction } from '../src/action-parser';
 import { ActionMove, Faction, FactionBoard } from '../src/interfaces';
 
-test('Correctly parses an action to make the Duchy lose a minister with default faction board', t => {
+test('Correctly parses an action to make the Duchy lose a minister on their turn', t => {
 
   const result = parseAction('#brigadier$->', 'D' as Faction);
 
@@ -15,7 +15,7 @@ test('Correctly parses an action to make the Duchy lose a minister with default 
 
 test('Correctly parses an action to make the Duchy lose a minister', t => {
 
-  const result = parseAction('#marshalD$->', 'D' as Faction);
+  const result = parseAction('#marshalD$->', 'P' as Faction);
 
   t.is(result.things[0].number, 1);
   t.deepEqual(result.things[0].thing, { cardName: 'marshal' });

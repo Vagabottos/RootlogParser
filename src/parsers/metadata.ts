@@ -8,43 +8,80 @@ function cleanText(str: string = ''): string {
 
 // map line format: Map: <text>
 export function parseMap(line: string): Map {
-  return cleanText(line.split('Map:')[1]) as Map;
+  const map = cleanText(line.split('Map:')[1]) as Map;
+
+  if (!Object.values(Map).includes(map)) {
+    throw `Map ${map} doesn't exist.`;
+  }
+
+  return map;
 }
 
 // deck line format: Deck: <text>
 export function parseDeck(line: string): Deck {
-  return cleanText(line.split('Deck:')[1]) as Deck;
+  const deck = cleanText(line.split('Deck:')[1]) as Deck;
+
+  if (!Object.values(Deck).includes(deck)) {
+    throw `Deck ${deck} doesn't exist.`;
+  }
+
+  return deck;
 }
 
 // winner line format: Winner: <factions...>
 export function parseWinner(line: string): Faction[] {
-  return cleanText(line.split('Winner:')[1]).split('') as Faction[];
+  const winners = cleanText(line.split('Winner:')[1]).split('') as Faction[];
+
+  for (let winner of winners) {
+    if (!Object.values(Faction).includes(winner)) {
+      throw `Winner contains invalid Faction ${winner}.`;
+    }
+  }
+
+  return winners;
 }
 
 // pool line format: Pool: <factions...>
 export function parsePool(line: string): Faction[] {
-  return cleanText(line.split('Pool:')[1]).split('') as Faction[];
+  const pool = cleanText(line.split('Pool:')[1]).split('') as Faction[];
+
+  for (let faction of pool) {
+    if (!Object.values(Faction).includes(faction)) {
+      throw `Faction pool contains invalid Faction ${faction}.`;
+    }
+  }
+
+  return pool;
 }
 
 // player line format: <Faction>: Player Name
 export function parsePlayer(line: string): string {
-  return cleanText(line.split(':')[1]);
+  const player = cleanText(line.split(':')[1]);
+  return player;
 }
 
 // clearing line format: Clearings: <suit>X, <suit>Y (x/y = clearing num, 1-indexed)
 export function parseClearings(line: string): Suit[] {
-  const suitPos = [];
+  const suitClearing = [];
 
-  line.split('Clearings:')[1].split(',').map(x => x.trim()).forEach((suitWithPos, idx) => {
-    const suit = suitWithPos.substring(0, 1);
-    let pos = +suitWithPos.substring(1);
+  line.split('Clearings:')[1].split(',').map(x => x.trim()).forEach((suitWithClearing, index) => {
+    const suit = suitWithClearing.substring(0, 1) as Suit;
+    let clearingNumber = +suitWithClearing.substring(1);
+    
+    if(isNaN(clearingNumber)) {
+      clearingNumber = index + 1;
+    }
 
-    if(isNaN(pos)) pos = idx + 1;
-
-    suitPos[pos - 1] = suit as Suit;
+    if (suit === Suit.Bird) {
+      throw `"Bird" is not a valid clearing suit for clearing ${clearingNumber}.`
+    } else if (suit !== Suit.Fox && suit !== Suit.Mouse && suit !== Suit.Rabbit) {
+      throw `Clearing ${clearingNumber} has an invalid suit: ${suit}.`;
+    }
+    
+    suitClearing[clearingNumber - 1] = suit as Suit;
   })
 
-  return suitPos;
+  return suitClearing;
 }
 
 // parse out a turn, anything with a single character followed by the colon
