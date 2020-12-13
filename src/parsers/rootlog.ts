@@ -66,9 +66,7 @@ export function parseRootlog(rootlog: string): RootGame {
       return;
     }
 
-    console.error(`Could not parse line: "${line}" - no handlers for this.`);
-    // throw new Error(`Could not parse line: "${line}" - no handlers for this.`);
-
+    throw new Error(`Could not parse line: "${line}" - no handlers for this.`);
   });
 
   return game as RootGame;

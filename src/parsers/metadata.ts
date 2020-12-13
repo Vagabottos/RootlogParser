@@ -11,7 +11,7 @@ export function parseMap(line: string): RootMap {
   const map = cleanText(line.split('Map:')[1]) as RootMap;
 
   if (!Object.values(RootMap).includes(map)) {
-    throw `Map ${map} doesn't exist.`;
+    throw new Error(`Map ${map} doesn't exist.`);
   }
 
   return map;
@@ -22,7 +22,7 @@ export function parseDeck(line: string): RootDeck {
   const deck = cleanText(line.split('Deck:')[1]) as RootDeck;
 
   if (!Object.values(RootDeck).includes(deck)) {
-    throw `Deck ${deck} doesn't exist.`;
+    throw new Error(`Deck ${deck} doesn't exist.`);
   }
 
   return deck;
@@ -34,7 +34,7 @@ export function parseWinner(line: string): RootFaction[] {
 
   for (let winner of winners) {
     if (!Object.values(RootFaction).includes(winner)) {
-      throw `Winner contains invalid Faction ${winner}.`;
+      throw new Error(`Winner contains invalid Faction ${winner}.`);
     }
   }
 
@@ -47,7 +47,7 @@ export function parsePool(line: string): RootFaction[] {
 
   for (let faction of pool) {
     if (!Object.values(RootFaction).includes(faction)) {
-      throw `Faction pool contains invalid Faction ${faction}.`;
+      throw new Error(`Faction pool contains invalid Faction ${faction}.`);
     }
   }
 
@@ -73,9 +73,9 @@ export function parseClearings(line: string): RootSuit[] {
     }
 
     if (suit === RootSuit.Bird) {
-      throw `"Bird" is not a valid clearing suit for clearing ${clearingNumber}.`
+      throw new Error(`"Bird" is not a valid clearing suit for clearing ${clearingNumber}.`);
     } else if (suit !== RootSuit.Fox && suit !== RootSuit.Mouse && suit !== RootSuit.Rabbit) {
-      throw `Clearing ${clearingNumber} has an invalid suit: ${suit}.`;
+      throw new Error(`Clearing ${clearingNumber} has an invalid suit: ${suit}.`);
     }
     
     suitClearing[clearingNumber - 1] = suit as RootSuit;

@@ -117,7 +117,7 @@ function parseLocation(location: string, takingFaction: RootFaction): RootLocati
     return +location;
   }
 
-  throw `Could not parse location: "${location}"`;
+  throw new Error(`Could not parse location: "${location}"`);
 }
 
 // parse a move action
@@ -378,5 +378,5 @@ export function parseAction(action: string, faction: RootFaction): any {
     return parseMove(action, faction);
   }
 
-  throw `Could not parse action: "${action}" (${faction}) - no handlers for this.`;
+  throw new Error(`Could not parse action: "${action}" (${faction}) - no handlers for this.`);
 }
