@@ -128,6 +128,9 @@ export function parseMove(action: string, takingFaction: RootFaction): RootActio
 
   for (let simpleAction of actions) {
     const result = simpleAction.match(EXTENDED_MOVE_REGEX);
+    if (!result) {
+      throw new Error(`Couldn't parse action: ${simpleAction}`);
+    }
     const number = +(result.groups.countMoved || 1);
     const origin = parseLocation(result.groups.origin, takingFaction);
 
