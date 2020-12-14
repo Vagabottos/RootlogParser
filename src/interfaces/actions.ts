@@ -35,14 +35,14 @@ export interface RootActionDominance {
   target: RootFaction;
 }
 
-export interface SubjectReveal {
+export interface RootSubjectReveal {
     number?: number,
     card?: RootCard,
     revealer: RootFaction
 }
 
 export interface RootActionReveal {
-  subjects: SubjectReveal[];
+  subjects: RootSubjectReveal[];
   targets: RootFaction[];
 }
 
