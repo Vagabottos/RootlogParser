@@ -36,9 +36,9 @@ export interface RootActionDominance {
 }
 
 export interface RootSubjectReveal {
-    number?: number,
-    card?: RootCard,
-    revealer: RootFaction
+  number?: number;
+  card?: RootCard;
+  revealer: RootFaction;
 }
 
 export interface RootActionReveal {
