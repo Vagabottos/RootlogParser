@@ -111,7 +111,7 @@ const afterDarkSpecial = `
 // Played: 5 Dec 2020
 // https://www.youtube.com/watch?v=i5aWuH5CeGg
 
-Map: Winter
+Map: Fall
 Deck: E&P
 Clearings: R1, F2, R3, F4, R5, M6, M7, F8, M9, M10, R11, F12
 Pool: CDOAP

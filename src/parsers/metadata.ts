@@ -8,43 +8,80 @@ function cleanText(str: string = ''): string {
 
 // map line format: Map: <text>
 export function parseMap(line: string): RootMap {
-  return cleanText(line.split('Map:')[1]) as RootMap;
+  const map = cleanText(line.split('Map:')[1]) as RootMap;
+
+  if (!Object.values(RootMap).includes(map)) {
+    throw new Error(`Map ${map} doesn't exist.`);
+  }
+
+  return map;
 }
 
 // deck line format: Deck: <text>
 export function parseDeck(line: string): RootDeck {
-  return cleanText(line.split('Deck:')[1]) as RootDeck;
+  const deck = cleanText(line.split('Deck:')[1]) as RootDeck;
+
+  if (!Object.values(RootDeck).includes(deck)) {
+    throw new Error(`Deck ${deck} doesn't exist.`);
+  }
+
+  return deck;
 }
 
 // winner line format: Winner: <factions...>
 export function parseWinner(line: string): RootFaction[] {
-  return cleanText(line.split('Winner:')[1]).split('') as RootFaction[];
+  const winners = cleanText(line.split('Winner:')[1]).split('') as RootFaction[];
+
+  for (let winner of winners) {
+    if (!Object.values(RootFaction).includes(winner)) {
+      throw new Error(`Winner contains invalid Faction ${winner}.`);
+    }
+  }
+
+  return winners;
 }
 
 // pool line format: Pool: <factions...>
 export function parsePool(line: string): RootFaction[] {
-  return cleanText(line.split('Pool:')[1]).split('') as RootFaction[];
+  const pool = cleanText(line.split('Pool:')[1]).split('') as RootFaction[];
+
+  for (let faction of pool) {
+    if (!Object.values(RootFaction).includes(faction)) {
+      throw new Error(`Faction pool contains invalid Faction ${faction}.`);
+    }
+  }
+
+  return pool;
 }
 
 // player line format: <Faction>: Player Name
 export function parsePlayer(line: string): string {
-  return cleanText(line.split(':')[1]);
+  const player = cleanText(line.split(':')[1]);
+  return player;
 }
 
 // clearing line format: Clearings: <suit>X, <suit>Y (x/y = clearing num, 1-indexed)
 export function parseClearings(line: string): RootSuit[] {
-  const suitPos = [];
+  const suitClearing = [];
 
-  line.split('Clearings:')[1].split(',').map(x => x.trim()).forEach((suitWithPos, idx) => {
-    const suit = suitWithPos.substring(0, 1);
-    let pos = +suitWithPos.substring(1);
+  line.split('Clearings:')[1].split(',').map(x => x.trim()).forEach((suitWithClearing, index) => {
+    const suit = suitWithClearing.substring(0, 1) as RootSuit;
+    let clearingNumber = +suitWithClearing.substring(1);
+    
+    if(isNaN(clearingNumber)) {
+      clearingNumber = index + 1;
+    }
 
-    if(isNaN(pos)) pos = idx + 1;
-
-    suitPos[pos - 1] = suit as RootSuit;
+    if (suit === RootSuit.Bird) {
+      throw new Error(`"Bird" is not a valid clearing suit for clearing ${clearingNumber}.`);
+    } else if (suit !== RootSuit.Fox && suit !== RootSuit.Mouse && suit !== RootSuit.Rabbit) {
+      throw new Error(`Clearing ${clearingNumber} has an invalid suit: ${suit}.`);
+    }
+    
+    suitClearing[clearingNumber - 1] = suit as RootSuit;
   })
 
-  return suitPos;
+  return suitClearing;
 }
 
 // parse out a turn, anything with a single character followed by the colon

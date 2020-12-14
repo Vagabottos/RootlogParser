@@ -1,8 +1,7 @@
 import test from 'ava-ts';
 import { parseAction } from '../src/action-parser';
 
-import { RootActionMove, RootFaction, RootSuit } from '../src/interfaces';
-import { parseAddToDecree, parseEyrieAction } from '../src/parsers';
+import { RootActionMove, RootFaction, RootFactionBoard, RootSuit } from '../src/interfaces';
 
 test('Correctly parses an array of actions to add a card to the Decree', t => {
 
@@ -10,10 +9,10 @@ test('Correctly parses an array of actions to add a card to the Decree', t => {
 
   t.deepEqual(result.things, [{
     number: 1,
-    thing: { suit: 'R' as RootSuit, cardName: null},
-    start: 'E' as RootFaction
+    thing: { suit: RootSuit.Rabbit, cardName: null},
+    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
+    destination: null
   }]);
-  t.deepEqual(result.destinations, [null]);  // TODO: Implement in code
 });
 
 test('Correctly parses an array of actions to add two cards to the Decree', t => {
@@ -22,10 +21,10 @@ test('Correctly parses an array of actions to add two cards to the Decree', t =>
 
   t.deepEqual(result.things, [{
     number: 2,
-    thing: { suit: 'R' as RootSuit, cardName: null},
-    start: 'E' as RootFaction
+    thing: { suit: RootSuit.Rabbit, cardName: null},
+    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
+    destination: null
   }]);
-  t.deepEqual(result.destinations, [null]);  // TODO: Implement in code
 });
 
 test('Correctly parses an array of actions to add two cards of different suits to the Decree', t => {
@@ -34,15 +33,16 @@ test('Correctly parses an array of actions to add two cards of different suits t
 
   t.deepEqual(result.things, [{
     number: 1,
-    thing: { suit: 'R' as RootSuit, cardName: null},
-    start: 'E' as RootFaction
+    thing: { suit: RootSuit.Rabbit, cardName: null},
+    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
+    destination: null
   },
   {
     number: 1,
-    thing: { suit: 'B' as RootSuit, cardName: null},
-    start: 'E' as RootFaction
+    thing: { suit: RootSuit.Bird, cardName: null},
+    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
+    destination: null
   }]);
-  t.deepEqual(result.destinations, [null, null]);  // TODO: Implement in code
 });
 
 test('Correctly parses a string of actions to add a card to the Decree', t => {
@@ -51,10 +51,10 @@ test('Correctly parses a string of actions to add a card to the Decree', t => {
 
   t.deepEqual(result.things, [{
     number: 1,
-    thing: { suit: 'R' as RootSuit, cardName: null},
-    start: 'E' as RootFaction
+    thing: { suit: RootSuit.Rabbit, cardName: null},
+    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
+    destination: null
   }]);
-  t.deepEqual(result.destinations, [null]);  // TODO: Implement in code
 });
 
 test('Correctly parses a string of actions to add two cards to the Decree', t => {
@@ -63,10 +63,10 @@ test('Correctly parses a string of actions to add two cards to the Decree', t =>
 
   t.deepEqual(result.things, [{
     number: 2,
-    thing: { suit: 'R' as RootSuit, cardName: null},
-    start: 'E' as RootFaction
+    thing: { suit: RootSuit.Rabbit, cardName: null},
+    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
+    destination: null
   }]);
-  t.deepEqual(result.destinations, [null]);  // TODO: Implement in code
 });
 
 test('Correctly parses a string of actions to add two cards of different suits to the Decree', t => {
@@ -75,15 +75,16 @@ test('Correctly parses a string of actions to add two cards of different suits t
 
   t.deepEqual(result.things, [{
     number: 1,
-    thing: { suit: 'R' as RootSuit, cardName: null},
-    start: 'E' as RootFaction
+    thing: {suit: RootSuit.Rabbit, cardName: null},
+    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
+    destination: null
   },
   {
     number: 1,
-    thing: { suit: 'B' as RootSuit, cardName: null},
-    start: 'E' as RootFaction
+    thing: {suit: RootSuit.Bird, cardName: null},
+    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
+    destination: null
   }]);
-  t.deepEqual(result.destinations, [null, null]);  // TODO: Implement in code
 });
 
 test('Correctly parses an action to purge the Decree', t => {
@@ -91,7 +92,6 @@ test('Correctly parses an action to purge the Decree', t => {
   const result = parseAction('$_->', RootFaction.Eyrie) as RootActionMove;
 
   t.deepEqual(result.things, []);  // TODO: Implement in code
-  t.deepEqual(result.destinations, []);
 });
 
 test('Correctly parses an action to choose a Leader', t => {
@@ -101,7 +101,7 @@ test('Correctly parses an action to choose a Leader', t => {
   t.deepEqual(result.things, [{
     number: 1,
     thing: { cardName: 'commander' },
-    start: null
+    start: null,
+    destination: {faction: RootFaction.Eyrie} as RootFactionBoard
   }]);
-  t.deepEqual(result.destinations, ['E' as RootFaction]);
 });

@@ -4,12 +4,11 @@ const GROUPING_REGEX = new RegExp(`\\((.+)\\)(.+)`);
  * TODO: Fix error where moving to satchel + exhausted (Is this an error?)
 {
   things: [
-    { number: 1, thing: 'r', start: null },
-    { number: 1, thing: 'r', start: null },
-    { number: 1, thing: 't', start: NaN },
-    { number: 1, thing: 't', start: NaN }
-  ],
-  destinations: [ NaN, 'e', NaN, 'e' ],
+    { number: 1, thing: 'r', start: null, destination: NaN },
+    { number: 1, thing: 'r', start: null, destination: 'e' },
+    { number: 1, thing: 't', start: NaN, destination: NaN },
+    { number: 1, thing: 't', start: NaN, destination: 'e' }
+  ]
   raw: '%r+%tt->s+e'
 }
 >>> { number: 1, thing: 'r', start: null }

@@ -12,9 +12,9 @@ export function parseDuchyAction(action: string): RootAction {
       things: [{
         number: 1,
         thing: { cardName: result.groups.swayedMinister },
-        start: null
-      } as RootThing],
-      destinations: [{faction: RootFaction.Duchy} as RootFactionBoard]
+        start: null,
+        destination: {faction: RootFaction.Duchy} as RootFactionBoard
+      } as RootThing]
     };
   }
 

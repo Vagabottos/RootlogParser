@@ -24,11 +24,11 @@ export interface RootThing {
   number: number;
   thing: RootCard | RootItem | RootPiece;
   start: RootLocation;
+  destination: RootLocation;
 }
 
 export interface RootActionMove {
   things: RootThing[];
-  destinations: RootLocation[];
 }
 
 export interface RootActionDominance {
