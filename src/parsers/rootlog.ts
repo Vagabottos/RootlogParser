@@ -1,4 +1,4 @@
-import { RootActionGainVP, RootGame, RootSuit } from '../interfaces';
+import { RootActionGainVP, RootFaction, RootGame, RootSuit } from '../interfaces';
 import { parseClearings, parseDeck, parseMap, parsePlayer, parsePool, parseTurn, parseWinner } from './metadata';
 
 export function parseRootlog(rootlog: string): RootGame {
@@ -85,7 +85,7 @@ export function parseRootlog(rootlog: string): RootGame {
   return game as RootGame;
 };
 
-export function calculateHighestPointTurn(game: RootGame): any {
+export function calculateHighestPointTurn(game: RootGame): { faction: RootFaction, pointsScored: number, turn: number } {
   // Calculate biggest point turn in game.
   const pointsPerTurn = game.turns.map(turn => {
     const pointsScored = turn.actions.map(a => {
