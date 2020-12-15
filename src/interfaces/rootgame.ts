@@ -302,6 +302,5 @@ export interface RootGame {
   players: Partial<Record<RootFaction, string>>;    // { [factionkey]: player }
   turns: RootTurn[];                                // all of the game turns in order
   winner: RootFaction[];                            // the winner(s) of the game
-  stats: any;                                       // overall stats related to the game
   parseErrors: Error[];                             // errors raised while parsing the game script
 }

@@ -14,7 +14,6 @@ export function parseRootlog(rootlog: string): RootGame {
       RootSuit.Rabbit, RootSuit.Mouse, RootSuit.Fox
     ] as RootSuit[],
 
-    stats: {},
     parseErrors: []
   };
 
@@ -77,7 +76,16 @@ export function parseRootlog(rootlog: string): RootGame {
       game.parseErrors.push(e.message);
     }
   });
+  
+  // Output error message.
+  if(game.parseErrors.length > 0) {
+    console.error(`Game parsed with ${game.parseErrors.length} error(s), check \`game.parseErrors\` for more information.`);
+  }
 
+  return game as RootGame;
+};
+
+export function calculateHighestPointTurn(game: RootGame): any {
   // Calculate biggest point turn in game.
   const pointsPerTurn = game.turns.map(turn => {
     const pointsScored = turn.actions.map(a => {
@@ -94,13 +102,8 @@ export function parseRootlog(rootlog: string): RootGame {
   }).sort(turn => -turn.pointsScored);
 
   if (pointsPerTurn.length > 0) {
-    game.stats.highestScoringTurn = pointsPerTurn[0];
-  }
-  
-  // Output error message.
-  if(game.parseErrors.length > 0) {
-    console.error(`Game parsed with ${game.parseErrors.length} error(s), check \`game.parseErrors\` for more information.`);
+    return pointsPerTurn[0];
   }
 
-  return game as RootGame;
-};
+  return null;
+}
