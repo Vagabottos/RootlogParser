@@ -1,4 +1,4 @@
-import { RootGame, RootSuit } from '../interfaces';
+import { RootActionGainVP, RootFaction, RootGame, RootSuit } from '../interfaces';
 import { parseClearings, parseDeck, parseMap, parsePlayer, parsePool, parseTurn, parseWinner } from './metadata';
 
 export function parseRootlog(rootlog: string): RootGame {
@@ -76,10 +76,34 @@ export function parseRootlog(rootlog: string): RootGame {
       game.parseErrors.push(e.message);
     }
   });
-
+  
+  // Output error message.
   if(game.parseErrors.length > 0) {
     console.error(`Game parsed with ${game.parseErrors.length} error(s), check \`game.parseErrors\` for more information.`);
   }
 
   return game as RootGame;
 };
+
+export function calculateHighestPointTurn(game: RootGame): { faction: RootFaction, pointsScored: number, turn: number } {
+  // Calculate biggest point turn in game.
+  const pointsPerTurn = game.turns.map(turn => {
+    const pointsScored = turn.actions.map(a => {
+      return (a as RootActionGainVP).vp || 0;
+    }).reduce((a, b) => {
+      return a + b;
+    }, 0);
+
+    return {
+      faction: turn.taker,
+      pointsScored: pointsScored,
+      turn: game.turns.indexOf(turn) + 1
+    };
+  }).sort(turn => -turn.pointsScored);
+
+  if (pointsPerTurn.length > 0) {
+    return pointsPerTurn[0];
+  }
+
+  return null;
+}

@@ -303,5 +303,4 @@ export interface RootGame {
   turns: RootTurn[];                                // all of the game turns in order
   winner: RootFaction[];                            // the winner(s) of the game
   parseErrors: Error[];                             // errors raised while parsing the game script
-
 }
