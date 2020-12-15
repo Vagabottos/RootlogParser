@@ -1,4 +1,4 @@
-import { RootActionClearPath, RootActionCombat, RootActionCraft, RootActionDominance, RootActionGainVP, RootActionMove, RootActionReveal, RootActionTriggerPlot, RootActionUpdateFunds, RootCard, RootCardName, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootPieceType, RootLocation, RootSuit, RootThing, RootVagabondRelationshipStatus } from './interfaces';
+import { RootActionClearPath, RootActionCombat, RootActionCraft, RootActionDominance, RootActionGainVP, RootActionMove, RootActionReveal, RootActionTriggerPlot, RootActionUpdateFunds, RootCard, RootCardName, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootPieceType, RootLocation, RootSuit, RootThing, RootVagabondRelationshipStatus, RootForest } from './interfaces';
 import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
 import { splitAction } from './utils/action-splitter';
 import { extendCardName } from './utils/card-name-utils';
@@ -37,6 +37,7 @@ const PIECE_REGEX_STRING = `^[${ALL_FACTIONS}]?[${ALL_PIECES}]_?[swrkfrmcbe]?$`;
 const PIECE_REGEX = new RegExp(PIECE_REGEX_STRING);
 const CARD_REGEX_STRING = `^[${ALL_SUITS}]?#[@a-z]*$`;
 const CARD_REGEX = new RegExp(CARD_REGEX_STRING);
+const FOREST_REGEX = new RegExp('^(1[0-2]|[1-9])(_(1[0-2]|[1-9])){2,}$')
 
 // parse a VP action, defaults to +1
 export function parseVP(action: string, currentFaction: RootFaction): RootActionGainVP {
@@ -113,6 +114,8 @@ function parseLocation(location: string, takingFaction: RootFaction): RootLocati
     return location as RootItemState;
   } else if (location === "*") {
     return "Discard pile";
+  } else if (FOREST_REGEX.test(location)) {
+    return { clearings: location.split("_").map(Number) } as RootForest
   } else if (+location !== NaN) {
     return +location;
   }
