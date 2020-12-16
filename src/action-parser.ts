@@ -153,6 +153,12 @@ export function parseMove(action: string, takingFaction: RootFaction): RootActio
       return null;
     }(result.groups.componentMoved));
 
+    const componentPiece = component as RootPiece;
+    if ((componentPiece.faction === RootFaction.Vagabond || componentPiece.faction === RootFaction.Vagabond2) &&
+        componentPiece.pieceType !== RootPieceType.Pawn && componentPiece.pieceType !== RootPieceType.Raft) {
+      throw new Error(`Vagabond doesn't have a ${componentPiece.pieceType} piece type, only a ${RootPieceType.Pawn}. On their turn: ${simpleAction}`);
+    }
+
     movingComponents.push({
       number: number,
       thing: component,
