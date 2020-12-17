@@ -1,4 +1,4 @@
-import { RootActionClearPath, RootActionCombat, RootActionCraft, RootActionDominance, RootActionGainVP, RootActionMove, RootActionReveal, RootActionUpdateFunds, RootCard, RootCardName, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootPieceType, RootLocation, RootSuit, RootThing, RootVagabondRelationshipStatus, RootForest, RootActionPlot, ActionType } from './interfaces';
+import { RootActionClearPath, RootActionCombat, RootActionCraft, RootActionDominance, RootActionGainVP, RootActionMove, RootActionReveal, RootActionUpdateFunds, RootCard, RootCardName, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootPieceType, RootLocation, RootSuit, RootThing, RootVagabondRelationshipStatus, RootForest, RootActionPlot, RootActionType } from './interfaces';
 import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
 import { splitAction } from './utils/action-splitter';
 import { extendCardName } from './utils/card-name-utils';
@@ -282,7 +282,7 @@ export function parsePlotAction(action: string): RootActionPlot {
     const result = action.match(EXPOSE_PLOT_REGEX);
 
     return {
-      type: ActionType.ExposePlot,
+      type: RootActionType.ExposePlot,
       plot: result.groups.plotGuessed,
       clearing: +result.groups.plotClearing
     };
@@ -292,7 +292,7 @@ export function parsePlotAction(action: string): RootActionPlot {
     const result = action.match(FLIP_RAID_PLOT_REGEX);
 
     return {
-      type: ActionType.FlipPlot,
+      type: RootActionType.FlipPlot,
       plot: 't_r',
       clearing: +result.groups.plotClearing
     };
