@@ -69,6 +69,11 @@ export interface RootActionTriggerPlot {
   clearing: number;
 }
 
+export interface RootActionExposePlot {
+  plot: string;
+  clearing: number;
+}
+
 export interface RootActionSwapPlots {
   clearings: number[];
 }

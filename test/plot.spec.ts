@@ -1,12 +1,11 @@
 import test from 'ava-ts';
 
-import { RootActionSwapPlots, RootActionTriggerPlot, RootFaction } from '../src/interfaces';
-import { parseConspiracyAction } from '../src/parsers';
-import { parseAction, parsePlotAction } from '../src/action-parser';
+import { RootActionExposePlot, RootActionSwapPlots, RootActionTriggerPlot, RootFaction } from '../src/interfaces';
+import { parseAction } from '../src/action-parser';
 
 test('Correctly parses an action to attempt to expose a plot', t => {
 
-  const result = parseAction('?Pt_r5', RootFaction.Marquise);
+  const result = parseAction('?Pt_r5', RootFaction.Marquise) as RootActionExposePlot;
 
   t.is(result.plot, 't_r');
   t.is(result.clearing, 5);
@@ -14,7 +13,7 @@ test('Correctly parses an action to attempt to expose a plot', t => {
 
 test('Correctly parses an action to attempt to expose a plot in a clearing with multiple digits', t => {
 
-  const result = parseAction('?Pt_e11', RootFaction.Marquise);
+  const result = parseAction('?Pt_e11', RootFaction.Marquise) as RootActionExposePlot;
 
   t.is(result.plot, 't_e');
   t.is(result.clearing, 11);
