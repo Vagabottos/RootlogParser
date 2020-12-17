@@ -201,7 +201,6 @@ test('Move - retrieve from Discard pile', t => {
 test('Move - move into a forest', t => {
 
   const result = parseAction('p->1_2_5_6_11_12', 'V' as RootFaction);
-  console.log(result.things)
 
   t.is(result.things[0].number, 1);
   t.is((result.things[0].thing as RootPiece).faction, 'V');

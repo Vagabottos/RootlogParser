@@ -9,7 +9,7 @@ export function parseCultAction(action: string): RootAction {
     const result = action.match(SET_OUTCAST_REGEX);
 
     return {
-      degree: result.groups.outcastDegree,
+      isHated: (result.groups.outcastDegree === 'ho'),
       suit: result.groups.outcastSuit as RootSuit
     };
   }

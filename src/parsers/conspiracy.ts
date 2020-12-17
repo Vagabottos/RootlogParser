@@ -10,6 +10,7 @@ export function parseConspiracyAction(action: string): RootAction {
     const result = action.match(FLIP_PLOT_REGEX);
 
     return {
+      type: 'flip plot',
       plot: result.groups.plotFlipped,
       clearing: +result.groups.plotClearing
     };
@@ -19,6 +20,7 @@ export function parseConspiracyAction(action: string): RootAction {
     const result = action.match(TRICK_PLOT_REGEX);
 
     return {
+      type: 'swap plots',
       clearings: [+result.groups.firstClearing, +result.groups.secondClearing]
     };
   }
