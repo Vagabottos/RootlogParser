@@ -2,6 +2,12 @@ import { RootCard, RootCardName, RootFaction, RootItem, RootPiece, RootLocation,
 
 export type RootAction = RootActionGainVP | RootActionCraft | RootActionMove | RootActionDominance | RootActionCombat | RootActionReveal | RootActionClearPath | RootActionSetOutcast | RootActionSetPrices | RootActionUpdateFunds | RootActionPlot | RootActionSwapPlots;
 
+export enum ActionType {
+  FlipPlot = "flip plot",
+  ExposePlot = "expose plot",
+  SwapPlots = "swap plots",
+}
+
 export interface RootActionGainVP {
   vp: number;
   faction: RootFaction;
@@ -65,12 +71,12 @@ export interface RootActionUpdateFunds {
 }
 
 export interface RootActionPlot {
-  type: string;
+  type: ActionType;
   plot: string;
   clearing: number;
 }
 
 export interface RootActionSwapPlots {
-  type: string;
+  type: ActionType;
   clearings: number[];
 }
