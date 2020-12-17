@@ -1,4 +1,4 @@
-import { RootActionClearPath, RootActionCombat, RootActionCraft, RootActionDominance, RootActionGainVP, RootActionMove, RootActionReveal, RootActionTriggerPlot, RootActionUpdateFunds, RootCard, RootCardName, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootPieceType, RootLocation, RootSuit, RootThing, RootVagabondRelationshipStatus, RootForest, RootActionExposePlot } from './interfaces';
+import { RootActionClearPath, RootActionCombat, RootActionCraft, RootActionDominance, RootActionGainVP, RootActionMove, RootActionReveal, RootActionUpdateFunds, RootCard, RootCardName, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootPieceType, RootLocation, RootSuit, RootThing, RootVagabondRelationshipStatus, RootForest, RootActionPlot, RootActionType } from './interfaces';
 import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
 import { splitAction } from './utils/action-splitter';
 import { extendCardName } from './utils/card-name-utils';
@@ -276,26 +276,26 @@ export function parsePriceOfFailureAction(action: string): RootActionMove {
 
 }
 
-export function parsePlotAction(action: string): RootActionTriggerPlot | RootActionExposePlot {
+export function parsePlotAction(action: string): RootActionPlot {
 
   if (EXPOSE_PLOT_REGEX.test(action)) {
     const result = action.match(EXPOSE_PLOT_REGEX);
 
-    const exposePlot: RootActionExposePlot = {
+    return {
+      type: RootActionType.ExposePlot,
       plot: result.groups.plotGuessed,
       clearing: +result.groups.plotClearing
     };
-    return exposePlot;
   }
 
   if (FLIP_RAID_PLOT_REGEX.test(action)) {
     const result = action.match(FLIP_RAID_PLOT_REGEX);
 
-    const flipPlot: RootActionTriggerPlot = {
+    return {
+      type: RootActionType.FlipPlot,
       plot: 't_r',
       clearing: +result.groups.plotClearing
     };
-    return flipPlot;
   }
 
   return null;

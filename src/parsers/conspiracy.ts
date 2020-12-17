@@ -1,4 +1,4 @@
-import { RootAction } from '../interfaces';
+import { RootActionType, RootAction } from '../interfaces';
 import { formRegex } from '../utils/regex-former';
 
 const FLIP_PLOT_REGEX = formRegex('t<Clearing|||plotClearing>^<Piece|||plotFlipped>');
@@ -10,6 +10,7 @@ export function parseConspiracyAction(action: string): RootAction {
     const result = action.match(FLIP_PLOT_REGEX);
 
     return {
+      type: RootActionType.FlipPlot,
       plot: result.groups.plotFlipped,
       clearing: +result.groups.plotClearing
     };
@@ -19,6 +20,7 @@ export function parseConspiracyAction(action: string): RootAction {
     const result = action.match(TRICK_PLOT_REGEX);
 
     return {
+      type: RootActionType.SwapPlots,
       clearings: [+result.groups.firstClearing, +result.groups.secondClearing]
     };
   }
