@@ -28,7 +28,7 @@ const COMPONENT_REGEX_STRING = `(${CARD_REGEX_STRING}|${PIECE_REGEX_STRING}|${IT
 
 // Faction-specific Regex elements
 // Eyrie Dynasties
-const EYRIE_COLUMNS = `(${Object.values(RootEyrieSpecial).map(col => `\\$_${col}`).join('|')})`;    // ($_r|$_m|$_x|$_b)
+const EYRIE_COLUMNS = `(${Object.values(RootEyrieSpecial).join('|')})`;    // (r|m|x|b)
 const EYRIE_LEADERS = `(${Object.values(RootEyrieLeaderSpecial).join('|')})`;
 // Vagabond
 const VAGABOND_RELATIONSHIP_STATUS = `(${Object.values(RootVagabondRelationshipStatus).join('|')})`;

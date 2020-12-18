@@ -17,7 +17,8 @@ export function parseRootlog(rootlog: string): RootGame {
     parseErrors: []
   };
 
-  rootlog.split('\n').forEach((line) => {
+  const lines =rootlog.split('\n');
+  lines.forEach((line) => {
 
     // strip out comments, and always take the left side of comments
     line = line.split('//')[0].trim();
@@ -63,7 +64,7 @@ export function parseRootlog(rootlog: string): RootGame {
         const faction = line.split(':')[0];
         if(!game.players[faction]) {
           game.players[faction] = parsePlayer(line);
-          return; 
+          return;
         }
   
         game.turns.push(parseTurn(line));

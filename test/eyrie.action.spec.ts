@@ -10,8 +10,8 @@ test('Correctly parses an array of actions to add a card to the Decree', t => {
   t.deepEqual(result.things, [{
     number: 1,
     thing: { suit: RootSuit.Rabbit, cardName: null},
-    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
-    destination: null
+    start: RootFaction.Eyrie,
+    destination: 'r'
   }]);
 });
 
@@ -22,8 +22,8 @@ test('Correctly parses an array of actions to add two cards to the Decree', t =>
   t.deepEqual(result.things, [{
     number: 2,
     thing: { suit: RootSuit.Rabbit, cardName: null},
-    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
-    destination: null
+    start: RootFaction.Eyrie,
+    destination: 'x'
   }]);
 });
 
@@ -34,14 +34,14 @@ test('Correctly parses an array of actions to add two cards of different suits t
   t.deepEqual(result.things, [{
     number: 1,
     thing: { suit: RootSuit.Rabbit, cardName: null},
-    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
-    destination: null
+    start: RootFaction.Eyrie,
+    destination: 'x'
   },
   {
     number: 1,
     thing: { suit: RootSuit.Bird, cardName: null},
-    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
-    destination: null
+    start: RootFaction.Eyrie,
+    destination: 'x'
   }]);
 });
 
@@ -52,8 +52,8 @@ test('Correctly parses a string of actions to add a card to the Decree', t => {
   t.deepEqual(result.things, [{
     number: 1,
     thing: { suit: RootSuit.Rabbit, cardName: null},
-    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
-    destination: null
+    start: RootFaction.Eyrie,
+    destination: 'r'
   }]);
 });
 
@@ -64,8 +64,8 @@ test('Correctly parses a string of actions to add two cards to the Decree', t =>
   t.deepEqual(result.things, [{
     number: 2,
     thing: { suit: RootSuit.Rabbit, cardName: null},
-    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
-    destination: null
+    start: RootFaction.Eyrie,
+    destination: 'x'
   }]);
 });
 
@@ -76,14 +76,14 @@ test('Correctly parses a string of actions to add two cards of different suits t
   t.deepEqual(result.things, [{
     number: 1,
     thing: {suit: RootSuit.Rabbit, cardName: null},
-    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
-    destination: null
+    start: RootFaction.Eyrie,
+    destination: 'x'
   },
   {
     number: 1,
     thing: {suit: RootSuit.Bird, cardName: null},
-    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
-    destination: null
+    start: RootFaction.Eyrie,
+    destination: 'x'
   }]);
 });
 
