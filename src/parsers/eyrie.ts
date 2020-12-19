@@ -5,7 +5,7 @@ import { formRegex } from '../utils/regex-former';
 
 const PURGE_DECREE_REGEX = formRegex('$_->');
 const CHOOSE_LEADER_REGEX = formRegex('#<Leader|||chosenLeader>->$');
-const ADD_TO_DECREE_REGEX = formRegex('[Number|||countAdded]<Card|||cardAdded>E-><Decree|||columnAdded>')
+const ADD_TO_DECREE_REGEX = formRegex('[Number|||countAdded]<Card|||cardAdded>E->$_<Decree|||columnAdded>')
 
 
 export function parseAddToDecree(actions: string[]): RootActionMove {
@@ -17,8 +17,8 @@ export function parseAddToDecree(actions: string[]): RootActionMove {
     const component = {
       number: +(result.groups.countAdded || 1),
       thing: parseCard(result.groups.cardAdded),
-      start: {faction: RootFaction.Eyrie} as RootFactionBoard,
-      destination: null
+      start: RootFaction.Eyrie,
+      destination: result.groups.columnAdded
     };
 
     movingComponents.push(component);

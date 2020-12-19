@@ -1,6 +1,12 @@
 import { RootCard, RootCardName, RootFaction, RootItem, RootPiece, RootLocation, RootSuit } from './rootgame';
 
-export type RootAction = RootActionGainVP | RootActionCraft | RootActionMove | RootActionDominance | RootActionCombat | RootActionReveal | RootActionClearPath | RootActionSetOutcast | RootActionSetPrices | RootActionUpdateFunds | RootActionTriggerPlot | RootActionSwapPlots;
+export type RootAction = RootActionGainVP | RootActionCraft | RootActionMove | RootActionDominance | RootActionCombat | RootActionReveal | RootActionClearPath | RootActionSetOutcast | RootActionSetPrices | RootActionUpdateFunds | RootActionPlot | RootActionSwapPlots;
+
+export enum RootActionType {
+  FlipPlot = "flip plot",
+  ExposePlot = "expose plot",
+  SwapPlots = "swap plots",
+}
 
 export interface RootActionGainVP {
   vp: number;
@@ -51,7 +57,7 @@ export interface RootActionClearPath {
 }
 
 export interface RootActionSetOutcast {
-  degree: string;  // TODO: Come up with a better name for this to distinguish between Outcast and Hated Outcast
+  isHated: boolean;
   suit: RootSuit;
 }
 
@@ -64,11 +70,13 @@ export interface RootActionUpdateFunds {
   funds: number;
 }
 
-export interface RootActionTriggerPlot {
+export interface RootActionPlot {
+  type: RootActionType;
   plot: string;
   clearing: number;
 }
 
 export interface RootActionSwapPlots {
+  type: RootActionType;
   clearings: number[];
 }

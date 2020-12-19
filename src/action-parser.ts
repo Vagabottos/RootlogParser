@@ -1,4 +1,4 @@
-import { RootActionClearPath, RootActionCombat, RootActionCraft, RootActionDominance, RootActionGainVP, RootActionMove, RootActionReveal, RootActionTriggerPlot, RootActionUpdateFunds, RootCard, RootCardName, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootPieceType, RootLocation, RootSuit, RootThing, RootVagabondRelationshipStatus, RootForest, RootVagabondItemSpecial } from './interfaces';
+import { RootActionClearPath, RootActionCombat, RootActionCraft, RootActionDominance, RootActionGainVP, RootActionMove, RootActionReveal, RootActionUpdateFunds, RootCard, RootCardName, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootPieceType, RootLocation, RootSuit, RootThing, RootVagabondRelationshipStatus, RootForest, RootActionPlot, RootActionType, RootVagabondItemSpecial } from './interfaces';
 import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
 import { splitAction } from './utils/action-splitter';
 import { extendCardName } from './utils/card-name-utils';
@@ -134,6 +134,9 @@ export function parseMove(action: string, takingFaction: RootFaction): RootActio
 
   for (let simpleAction of actions) {
     const result = simpleAction.match(EXTENDED_MOVE_REGEX);
+    if (!result) {
+      throw new Error(`Couldn't parse action: ${simpleAction}`);
+    }
     const number = result.groups.componentMoved === '%_' ? -1 : +(result.groups.countMoved || 1);
     const origin = parseLocation(result.groups.origin, takingFaction);
 
@@ -152,6 +155,13 @@ export function parseMove(action: string, takingFaction: RootFaction): RootActio
       }
       return null;
     }(result.groups.componentMoved));
+
+    const componentPiece = component as RootPiece;
+    if (componentPiece !== null &&
+        (componentPiece.faction === RootFaction.Vagabond || componentPiece.faction === RootFaction.Vagabond2) &&
+        componentPiece.pieceType !== RootPieceType.Pawn && componentPiece.pieceType !== RootPieceType.Raft) {
+      throw new Error(`Vagabond doesn't have a ${componentPiece.pieceType} piece type, only a ${RootPieceType.Pawn}. On their turn: ${simpleAction}`);
+    }
 
     movingComponents.push({
       number: number,
@@ -270,12 +280,13 @@ export function parsePriceOfFailureAction(action: string): RootActionMove {
 
 }
 
-export function parsePlotAction(action: string): RootActionTriggerPlot {
+export function parsePlotAction(action: string): RootActionPlot {
 
   if (EXPOSE_PLOT_REGEX.test(action)) {
     const result = action.match(EXPOSE_PLOT_REGEX);
 
     return {
+      type: RootActionType.ExposePlot,
       plot: result.groups.plotGuessed,
       clearing: +result.groups.plotClearing
     };
@@ -285,6 +296,7 @@ export function parsePlotAction(action: string): RootActionTriggerPlot {
     const result = action.match(FLIP_RAID_PLOT_REGEX);
 
     return {
+      type: RootActionType.FlipPlot,
       plot: 't_r',
       clearing: +result.groups.plotClearing
     };
