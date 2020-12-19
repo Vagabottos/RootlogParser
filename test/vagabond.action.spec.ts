@@ -1,6 +1,6 @@
 import test from 'ava-ts';
 
-import { RootActionMove, RootFaction, RootFactionBoard } from '../src/interfaces';
+import { RootActionMove, RootFaction, RootFactionBoard, RootItemState, RootVagabondItemSpecial } from '../src/interfaces';
 import { parseAction } from '../src/action-parser';
 
 test('Correctly parses an action to choose a Character', t => {
@@ -19,5 +19,28 @@ test('Correctly parses an action to restore all items', t => {
 
   const result = parseAction('%_d->s', RootFaction.Vagabond) as RootActionMove;
 
-  t.deepEqual(result.things, []);  // TODO: Implement in code
+  t.deepEqual(result.things, [{
+    number: -1,
+    thing: null,
+    start: {faction: RootFaction.Vagabond} as RootFactionBoard,
+    destination: RootVagabondItemSpecial.Satchel
+  }]);
+});
+
+test('Correctly parses an action to restore and refresh all items', t => {
+
+  const result = parseAction('%_d->s+r', RootFaction.Vagabond) as RootActionMove;
+
+  t.deepEqual(result.things, [{
+    number: -1,
+    thing: null,
+    start: {faction: RootFaction.Vagabond} as RootFactionBoard,
+    destination: RootVagabondItemSpecial.Satchel
+  },
+  {
+    number: -1,
+    thing: null,
+    start: {faction: RootFaction.Vagabond} as RootFactionBoard,
+    destination: RootItemState.FaceUp
+  }]);
 });

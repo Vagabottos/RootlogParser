@@ -1,4 +1,4 @@
-import { RootActionClearPath, RootActionCombat, RootActionCraft, RootActionDominance, RootActionGainVP, RootActionMove, RootActionReveal, RootActionTriggerPlot, RootActionUpdateFunds, RootCard, RootCardName, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootPieceType, RootLocation, RootSuit, RootThing, RootVagabondRelationshipStatus, RootForest } from './interfaces';
+import { RootActionClearPath, RootActionCombat, RootActionCraft, RootActionDominance, RootActionGainVP, RootActionMove, RootActionReveal, RootActionTriggerPlot, RootActionUpdateFunds, RootCard, RootCardName, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootPieceType, RootLocation, RootSuit, RootThing, RootVagabondRelationshipStatus, RootForest, RootVagabondItemSpecial } from './interfaces';
 import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
 import { splitAction } from './utils/action-splitter';
 import { extendCardName } from './utils/card-name-utils';
@@ -95,11 +95,10 @@ export function parseCombat(action: string, takingFaction: RootFaction): RootAct
   return parsedAction;
 }
 
-// TODO: We need to add special locations (VagabondRelationshipStatus, VagabondItemSpecial, Quest, discard pile, maybe others) and forests
 // TODO: Add default:
 //    start: deck [card], current pawn location [pawn], supply [piece], or current faction board [item]
 //    end: discard pile [card], supply/out of game [piece], or out of game [item]
-function parseLocation(location: string, takingFaction: RootFaction): RootLocation {
+export function parseLocation(location: string, takingFaction: RootFaction): RootLocation {
   if (location == null) {
     return null;
   } else if (FACTION_BOARD_REGEX.test(location)) {
@@ -112,6 +111,10 @@ function parseLocation(location: string, takingFaction: RootFaction): RootLocati
     return location as RootFaction;
   } else if (Object.values(RootItemState).includes(location as RootItemState)) {
     return location as RootItemState;
+  } else if (Object.values(RootVagabondItemSpecial).includes(location as RootVagabondItemSpecial)) {
+    return location as RootVagabondItemSpecial;
+  } else if (location === "Q") {
+    return "Quests";
   } else if (location === "*") {
     return "Discard pile";
   } else if (FOREST_REGEX.test(location)) {
@@ -131,7 +134,7 @@ export function parseMove(action: string, takingFaction: RootFaction): RootActio
 
   for (let simpleAction of actions) {
     const result = simpleAction.match(EXTENDED_MOVE_REGEX);
-    const number = +(result.groups.countMoved || 1);
+    const number = result.groups.componentMoved === '%_' ? -1 : +(result.groups.countMoved || 1);
     const origin = parseLocation(result.groups.origin, takingFaction);
 
     const component = (function parseThing(thingString: string): RootPiece | RootCard | RootItem {
