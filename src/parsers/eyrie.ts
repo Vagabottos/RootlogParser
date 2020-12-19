@@ -1,5 +1,5 @@
 import { parseCard } from '../action-parser';
-import { RootAction, RootActionMove, RootFaction, RootFactionBoard } from '../interfaces';
+import { RootAction, RootActionMove, RootFaction, RootFactionBoard, RootThing } from '../interfaces';
 import { splitAction } from '../utils/action-splitter';
 import { formRegex } from '../utils/regex-former';
 
@@ -46,9 +46,16 @@ export function parseEyrieAction(action: string): RootAction {
   }
 
   if (PURGE_DECREE_REGEX.test(action)) {
+
     return {
-      things: []
+      things: [{
+        number: -1,
+        thing: null,
+        start: {faction: RootFaction.Eyrie} as RootFactionBoard,
+        destination: 'Discard pile'
+      } as RootThing]
     };
+
   }
 
   const simpleActions = splitAction(action);

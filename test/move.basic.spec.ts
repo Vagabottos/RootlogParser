@@ -1,7 +1,7 @@
 import test from 'ava-ts';
 
 import { parseAction } from '../src/action-parser';
-import { RootCard, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootLocation } from '../src/interfaces/rootgame';
+import { RootCard, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootLocation, RootVagabondItemSpecial } from '../src/interfaces/rootgame';
 
 test('Move - place one of current player\'s warriors', t => {
 
@@ -208,4 +208,38 @@ test('Move - move into a forest', t => {
   t.is(result.things[0].start, null);
 
   t.deepEqual(result.things[0].destination, { clearings: [1, 2, 5, 6, 11, 12] });
+});
+
+test('Move - move from the Available Quests to the faction board', t => {
+
+  const result = parseAction('M#Q->$', 'V' as RootFaction);
+
+  t.is(result.things[0].number, 1);
+  t.is((result.things[0].thing as RootCard).suit, 'M');
+  t.is(result.things[0].start, 'Quests');
+
+  t.deepEqual(result.things[0].destination, { faction: 'V' as RootFaction });
+});
+
+test('Move - move an item from the track to the satchel', t => {
+
+  const result = parseAction('%tt->s', 'V' as RootFaction);
+
+  t.is(result.things[0].number, 1);
+  t.is((result.things[0].thing as RootItem), 't');
+  t.is(result.things[0].start, RootVagabondItemSpecial.Track);
+
+  t.is(result.things[0].destination, RootVagabondItemSpecial.Satchel);
+});
+
+test("Move - correctly parses an action to damage all of the Vagabond's items", t => {
+
+  const result = parseAction('%_V$->d', 'O' as RootFaction);
+
+  t.deepEqual(result.things, [{
+    number: -1,
+    thing: null,
+    start: {faction: RootFaction.Vagabond} as RootFactionBoard,
+    destination: RootVagabondItemSpecial.Damaged
+  }]);
 });
