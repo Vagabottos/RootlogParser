@@ -31,7 +31,7 @@ const PRICE_OF_FAILURE_REGEX = formRegex('#<Minister|||lostMinister>[D]$->');
 const EXTENDED_MOVE_REGEX = formRegex('[Number|||countMoved]<ExtendedComponent|||componentMoved>[ExtendedLocation|||origin]->[ExtendedLocation|||destination]');
 
 const FACTION_BOARD_REGEX = new RegExp(`^([${ALL_FACTIONS}])?\\$$`);
-const ITEM_REGEX_STRING = `^\%[${ALL_ITEMS}_]$`;
+const ITEM_REGEX_STRING = `^\%[${ALL_ITEMS}]$`;
 const ITEM_REGEX = new RegExp(ITEM_REGEX_STRING);
 const PIECE_REGEX_STRING = `^[${ALL_FACTIONS}]?[${ALL_PIECES}]_?[swrkfrmcbe]?$`;
 const PIECE_REGEX = new RegExp(PIECE_REGEX_STRING);
