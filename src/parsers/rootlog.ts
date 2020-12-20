@@ -80,7 +80,7 @@ export function parseRootlog(rootlog: string): RootGame {
   
   // Output error message.
   if(game.parseErrors.length > 0) {
-    console.error(`Game parsed with ${game.parseErrors.length} error(s), check \`game.parseErrors\` for more information.`);
+    console.error(`Game parsed with ${game.parseErrors.length} error(s):\n` + game.parseErrors.join('\n'));
   }
 
   return game as RootGame;
