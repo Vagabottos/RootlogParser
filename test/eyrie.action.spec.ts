@@ -91,7 +91,12 @@ test('Correctly parses an action to purge the Decree', t => {
 
   const result = parseAction('$_->', RootFaction.Eyrie) as RootActionMove;
 
-  t.deepEqual(result.things, []);  // TODO: Implement in code
+  t.deepEqual(result.things, [{
+    number: -1,
+    thing: null,
+    start: {faction: RootFaction.Eyrie} as RootFactionBoard,
+    destination: 'Discard pile'
+  }]);
 });
 
 test('Correctly parses an action to choose a Leader', t => {
