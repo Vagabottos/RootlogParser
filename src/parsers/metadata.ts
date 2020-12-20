@@ -94,7 +94,7 @@ export function parseTurn(line: string): RootTurn {
   turn.taker = taker as RootFaction;
 
   unparsedActions.split(/[\/;]/).forEach(action => {
-    const actionObj = parseAction(action, turn.taker) || {raw: action};
+    const actionObj = parseAction(action, turn.taker) || {};
     actionObj.raw = action;
     turn.actions.push(actionObj);
   });
