@@ -1,5 +1,5 @@
 import { RootActionClearPath, RootActionCombat, RootActionCraft, RootActionDominance, RootActionGainVP, RootActionMove, RootActionReveal, RootActionUpdateFunds, RootCard, RootCardName, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootPieceType, RootLocation, RootSuit, RootThing, RootVagabondRelationshipStatus, RootForest, RootActionPlot, RootActionType, RootVagabondItemSpecial } from './interfaces';
-import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
+import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseHundredsAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
 import { splitAction } from './utils/action-splitter';
 import { extendCardName } from './utils/card-name-utils';
 import { formRegex } from './utils/regex-former';
@@ -337,6 +337,9 @@ export function parseAction(action: string, faction: RootFaction): any {
       break;
     case 'P':
       parsedAction = parseConspiracyAction(action);
+      break;
+    case 'H':
+      parsedAction = parseHundredsAction(action);
       break;
     default:
       break;

@@ -28,7 +28,8 @@ export enum RootFaction {
   Cult = 'L',
   Riverfolk = 'O',
   Duchy = 'D',
-  Corvid = 'P'
+  Corvid = 'P',
+  Hundreds = 'H'
 }
 
 export interface RootPiece {
@@ -164,6 +165,21 @@ export enum RootCorvidSpecial {
   ExtortionPlot = 't_e'
 }
 
+export enum RootHundredsSpecial {
+  Warlord = 'w_w'
+}
+
+export enum RootHundredsMoodSpecial {
+  Bitter = 'bitter',
+  Grandiose = 'grandiose',
+  Jubilant = 'jubilant',
+  Lavish = 'lavish',
+  Relentless = 'relentless',
+  Rowdy = 'rowdy',
+  Stubborn = 'stubborn',
+  Wrathful = 'wrathful'
+}
+
 export enum RootCardName {
 
   // all decks
@@ -173,6 +189,7 @@ export enum RootCardName {
   DominanceFullName = 'dominance',
   Anvil = 'anvil',
   ArmsTrader = 'armstrader',
+  AVisitToFriends = 'avisittofriends',
   BakeSale = 'bakesale',
   BirdyBindle = 'birdybindle',
   Crossbow = 'crossbow',
@@ -269,7 +286,7 @@ export enum RootQuestCard {
   Shed = 'shed'
 }
 
-export const RootSpecialCardName = Object.assign({}, RootEyrieLeaderSpecial, RootVagabondCharacterSpecial, RootDuchyMinisterSpecial);
+export const RootSpecialCardName = Object.assign({}, RootEyrieLeaderSpecial, RootVagabondCharacterSpecial, RootDuchyMinisterSpecial, RootHundredsMoodSpecial);
 export type RootSpecialCardName = typeof RootSpecialCardName;
 
 export interface RootForest {
