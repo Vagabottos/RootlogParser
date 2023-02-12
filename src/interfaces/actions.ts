@@ -1,11 +1,12 @@
 import { RootCard, RootCardName, RootFaction, RootItem, RootPiece, RootLocation, RootSuit } from './rootgame';
 
-export type RootAction = RootActionGainVP | RootActionCraft | RootActionMove | RootActionDominance | RootActionCombat | RootActionReveal | RootActionClearPath | RootActionSetOutcast | RootActionSetPrices | RootActionUpdateFunds | RootActionPlot | RootActionSwapPlots;
+export type RootAction = RootActionGainVP | RootActionCraft | RootActionMove | RootActionDominance | RootActionCombat | RootActionReveal | RootActionClearPath | RootActionSetOutcast | RootActionSetPrices | RootActionUpdateFunds | RootActionPlot | RootActionSwapPlots | RootActionFlipRelic;
 
 export enum RootActionType {
   FlipPlot = "flip plot",
   ExposePlot = "expose plot",
   SwapPlots = "swap plots",
+  FlipRelic = "flip relic",
 }
 
 export interface RootActionGainVP {
@@ -79,4 +80,10 @@ export interface RootActionPlot {
 export interface RootActionSwapPlots {
   type: RootActionType;
   clearings: number[];
+}
+
+export interface RootActionFlipRelic {
+  type: RootActionType;
+  relic: string;
+  clearing: number;
 }

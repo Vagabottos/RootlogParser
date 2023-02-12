@@ -1,4 +1,4 @@
-import { RootCardName, RootDuchyMinisterSpecial, RootEyrieLeaderSpecial, RootEyrieSpecial, RootFaction, RootHundredsMoodSpecial, RootItem, RootItemState, RootLizardOutcastSpecial, RootPieceType, RootQuestCard, RootRiverfolkPriceSpecial, RootSpecialCardName, RootSuit, RootVagabondCharacterSpecial, RootVagabondItemSpecial, RootVagabondRelationshipStatus } from '../interfaces';
+import { RootCardName, RootDuchyMinisterSpecial, RootEyrieLeaderSpecial, RootEyrieSpecial, RootFaction, RootHundredsMoodSpecial, RootKeepersSpecial, RootItem, RootItemState, RootLizardOutcastSpecial, RootPieceType, RootQuestCard, RootRiverfolkPriceSpecial, RootSpecialCardName, RootSuit, RootVagabondCharacterSpecial, RootVagabondItemSpecial, RootVagabondRelationshipStatus } from '../interfaces';
 
 const DIVIDER_BEFORE_GROUP_NAME = '|||';  // arbitrarily chosen to be a divider that will never appear in Rootlog code
 
@@ -17,8 +17,8 @@ const HAND = `(${ALL_FACTIONS})`;                                     // A facti
 // In order from most-to-least specific, including the discard pile represented by *
 const ALL_LOCATIONS = `(${FOREST}|${CLEARING}|${FACTION_BOARD}|${HAND}|${ALL_ITEM_STATE}|\\*)`;
 
-// [Faction]<PieceType>[_<subtype>],  subtype must be one letter
-const PIECE_REGEX_STRING = `(${ALL_FACTIONS})?(${ALL_PIECE_TYPES})(_[a-z])?`;
+// [Faction]<PieceType>[_<subtype>],  subtypes must be one letter or digit
+const PIECE_REGEX_STRING = `(${ALL_FACTIONS})?(${ALL_PIECE_TYPES})(_[a-z0-9](_[a-z])?)?`;
 // [Suit]#[CardName]
 const CARD_REGEX_STRING = `(${ALL_SUITS})?#${ALL_CARD_NAMES}?`;
 // %<ItemType> or %_ to represent 'all items'
@@ -45,6 +45,8 @@ const DUCHY_SPECIFIC_LOCATIONS = `(0)`;  // The Burrow
 const DUCHY_MINISTERS = `(${Object.values(RootDuchyMinisterSpecial).join('|')})`;
 // Lord of the Hundreds
 const HUNDREDS_MOODS = `(${Object.values(RootHundredsMoodSpecial).join('|')})`
+// Keepers in Iron
+const KEEPERS_COLUMNS = `(${Object.values(RootKeepersSpecial).join('|')})`;
 
 const EXTENDED_LOCATIONS = `(${VAGABOND_SPECIFIC_LOCATIONS}|${DUCHY_SPECIFIC_LOCATIONS}|${ALL_LOCATIONS}|\\*)`;
 // includes faction-specific card names
@@ -99,6 +101,8 @@ const parseForRegexString = function(str: string): string {
       return _parseForRegexString(DUCHY_MINISTERS, groupName);
     case ('mood'):
       return _parseForRegexString(HUNDREDS_MOODS, groupName);
+    case ('retinue'):
+      return _parseForRegexString(KEEPERS_COLUMNS, groupName);
     case ('extendedlocation'):
       return _parseForRegexString(EXTENDED_LOCATIONS, groupName);
     case ('extendedcomponent'):

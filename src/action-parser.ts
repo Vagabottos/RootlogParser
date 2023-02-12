@@ -1,5 +1,5 @@
 import { RootActionClearPath, RootActionCombat, RootActionCraft, RootActionDominance, RootActionGainVP, RootActionMove, RootActionReveal, RootActionUpdateFunds, RootCard, RootCardName, RootFaction, RootFactionBoard, RootItem, RootItemState, RootPiece, RootPieceType, RootLocation, RootSuit, RootThing, RootVagabondRelationshipStatus, RootForest, RootActionPlot, RootActionType, RootVagabondItemSpecial } from './interfaces';
-import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseHundredsAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
+import { parseConspiracyAction, parseCultAction, parseDuchyAction, parseEyrieAction, parseHundredsAction, parseKeepersAction, parseMarquiseAction, parseRiverfolkAction, parseVagabondAction, parseWoodlandAction } from './parsers';
 import { splitAction } from './utils/action-splitter';
 import { extendCardName } from './utils/card-name-utils';
 import { formRegex } from './utils/regex-former';
@@ -33,7 +33,7 @@ const EXTENDED_MOVE_REGEX = formRegex('[Number|||countMoved]<ExtendedComponent||
 const FACTION_BOARD_REGEX = new RegExp(`^([${ALL_FACTIONS}])?\\$$`);
 const ITEM_REGEX_STRING = `^\%[${ALL_ITEMS}]$`;
 const ITEM_REGEX = new RegExp(ITEM_REGEX_STRING);
-const PIECE_REGEX_STRING = `^[${ALL_FACTIONS}]?[${ALL_PIECES}]_?[swrkfrmcbe]?$`;
+const PIECE_REGEX_STRING = `^[${ALL_FACTIONS}]?[${ALL_PIECES}](_([jtswrkfrmcbe123](_[fjt])?)?)?$`;
 const PIECE_REGEX = new RegExp(PIECE_REGEX_STRING);
 const CARD_REGEX_STRING = `^[${ALL_SUITS}]?#[@a-z]*$`;
 const CARD_REGEX = new RegExp(CARD_REGEX_STRING);
@@ -341,6 +341,8 @@ export function parseAction(action: string, faction: RootFaction): any {
     case 'H':
       parsedAction = parseHundredsAction(action);
       break;
+    case 'K':
+      parsedAction = parseKeepersAction(action);
     default:
       break;
   }

@@ -29,7 +29,8 @@ export enum RootFaction {
   Riverfolk = 'O',
   Duchy = 'D',
   Corvid = 'P',
-  Hundreds = 'H'
+  Hundreds = 'H',
+  Keepers = 'K'
 }
 
 export interface RootPiece {
@@ -180,6 +181,12 @@ export enum RootHundredsMoodSpecial {
   Wrathful = 'wrathful'
 }
 
+export enum RootKeepersSpecial {
+  Move = 1,
+  BattleDelve = 2,
+  MoveOrRecover = 3,
+}
+
 export enum RootCardName {
 
   // all decks
@@ -271,7 +278,11 @@ export enum RootCardName {
   SwapMeet = 'swap',
   SwapMeetFullName = 'swapmeet',
   Tun = 'tun',
-  TunFullName = 'tunnels'
+  TunFullName = 'tunnels',
+
+  // Eyrie and Keepers
+  LoyalVizier = 'viz',
+  FaithfulRetainer = 'faith',
 }
 
 export enum RootQuestCard {
@@ -295,6 +306,7 @@ export interface RootForest {
 
 export interface RootFactionBoard {
   faction: RootFaction;
+  sublocation?: string | number;
 }
 
 // TODO: Add decree column, Vagabond board areas, quests
